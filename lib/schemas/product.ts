@@ -17,7 +17,7 @@ export const productSchema = z
   .object({
     // ── Required fields ──
     title: z
-      .string({ required_error: 'El título es obligatorio' })
+      .string({ error: 'El título es obligatorio' })
       .min(3, 'El título debe tener al menos 3 caracteres')
       .max(120, 'Máximo 120 caracteres'),
 
@@ -28,12 +28,12 @@ export const productSchema = z
       .default(''),
 
     category: z.enum(PRODUCT_CATEGORIES, {
-      required_error: 'Selecciona una categoría',
+      error: 'Selecciona una categoría',
     }),
 
     // ── Pricing ──
     salePrice: z
-      .number({ required_error: 'El precio de venta es obligatorio' })
+      .number({ error: 'El precio de venta es obligatorio' })
       .positive('El precio debe ser mayor a $0'),
 
     costPrice: z
@@ -60,7 +60,7 @@ export const productSchema = z
     shippingProfileId: z
       .enum(
         SHIPPING_PROFILES.map(p => p.id) as [ShippingProfileId, ...ShippingProfileId[]],
-        { required_error: 'Selecciona un perfil de envío' }
+        { error: 'Selecciona un perfil de envío' }
       )
       .default('shipping_standard'),
 
