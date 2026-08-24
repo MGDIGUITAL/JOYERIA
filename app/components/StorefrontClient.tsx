@@ -1,0 +1,470 @@
+'use client';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
+
+// ─── DESIGN TOKENS ────────────────────────────────────────────────────────
+const S = {
+  offWhite: '#FDFCF8',
+  ivory:    '#F3F0E9',
+  nude:     '#E3DBCC',
+  nudeDark: '#C8BBA8',
+  obsidian: '#101010',
+  charcoal: '#1E1E1E',
+  muted:    '#7A7468',
+  gold:     '#B8975A',
+  goldLight:'#D4B878',
+};
+
+const CATS = ['Todos', 'Anillos', 'Cadenas', 'Pulseras', 'Aros'];
+
+// ─── PROMO BAR ────────────────────────────────────────────────────────────
+function PromoBar() {
+  return (
+    <div className="promo-bar" style={{ padding:'10px 0', textAlign:'center', color:S.ivory, fontFamily:'Cinzel,serif', fontSize:'0.72rem', fontWeight:600, letterSpacing:'0.18em' }}>
+      ✦ DESPACHO GRATIS EN TODAS LAS COMPRAS &nbsp;·&nbsp; CUPÓN <strong>AMORA10</strong> – 10% EN TU PRIMERA COMPRA ✦
+    </div>
+  );
+}
+
+// ─── NAVBAR ───────────────────────────────────────────────────────────────
+function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', fn);
+    return () => window.removeEventListener('scroll', fn);
+  }, []);
+
+  const navBg = scrolled ? 'rgba(253,252,248,0.97)' : 'rgba(253,252,248,0.95)';
+  const linkColor = S.charcoal;
+
+  return (
+    <nav style={{
+      position:'sticky', top:0, zIndex:100,
+      background: navBg,
+      borderBottom:`1px solid ${S.nude}`,
+      backdropFilter:'blur(20px)',
+      transition:'all 0.3s',
+    }}>
+      <div style={{ maxWidth:1320, margin:'0 auto', padding:'0 2rem', height:72, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <Link href="/" style={{ display:'flex', alignItems:'center', textDecoration:'none', flexShrink:0 }}>
+          <Image src="/Amora_Jewelry_logo_header_480x114.png" alt="Amora Jewelry" width={200} height={48} style={{ objectFit:'contain' }} priority />
+        </Link>
+        <div style={{ display:'flex', gap:36, alignItems:'center' }}>
+          {[
+            { l:'Novedades', h:'#novedades' },
+            { l:'Catálogo',  h:'#joyeria' },
+            { l:'Regalos',   h:'/regalos' },
+          ].map(({ l, h }) => (
+            <a key={l} href={h} style={{ color:linkColor, textDecoration:'none', fontFamily:'Cinzel,serif', fontSize:'0.7rem', letterSpacing:'0.12em', textTransform:'uppercase', transition:'color 0.2s' }}
+              onMouseEnter={e=>(e.currentTarget.style.color=S.gold)}
+              onMouseLeave={e=>(e.currentTarget.style.color=linkColor)}
+            >{l}</a>
+          ))}
+          <a href="#sale" style={{ color:S.gold, textDecoration:'none', fontFamily:'Cinzel,serif', fontSize:'0.7rem', letterSpacing:'0.12em', textTransform:'uppercase' }}>Sale</a>
+        </div>
+        <div style={{ display:'flex', gap:20, alignItems:'center' }}>
+          {[
+            { img:'/amora_buscar.png', title:'Buscar' },
+            { img:'/amora_favoritos.png', title:'Favoritos' },
+            { img:'/amora_carrito.png', title:'Carrito' },
+          ].map(a => (
+            <button key={a.title} title={a.title} style={{ width:32, height:32, background:'none', border:'none', display:'flex', alignItems:'center', justifyContent:'center', transition:'opacity 0.2s', cursor:'pointer' }}
+              onMouseEnter={e=>(e.currentTarget.style.opacity='0.7')}
+              onMouseLeave={e=>(e.currentTarget.style.opacity='1')}
+            >
+              <div style={{ position:'relative', width:'100%', height:'100%' }}>
+                <Image src={a.img} alt={a.title} fill style={{ objectFit:'contain' }} />
+              </div>
+            </button>
+          ))}
+          <Link href="/admin" style={{
+            fontFamily:'Cinzel,serif', fontSize:'0.68rem', letterSpacing:'0.12em',
+            color:S.obsidian, border:`1px solid ${S.nude}`,
+            padding:'8px 20px', textDecoration:'none', transition:'all 0.25s',
+          }}
+            onMouseEnter={e=>{ e.currentTarget.style.background=S.obsidian; e.currentTarget.style.color=S.offWhite; }}
+            onMouseLeave={e=>{ e.currentTarget.style.background='transparent'; e.currentTarget.style.color=S.obsidian; }}
+          >ADMIN</Link>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+// ─── HERO ─────────────────────────────────────────────────────────────────
+const FONDOS = ['/fondo-1.png','/fondo-2.png','/fondo-3.png','/fondo-4.png','/fondo-5.png'];
+
+function Hero() {
+  const [current, setCurrent] = useState(0);
+  const [prev, setPrev] = useState<number|null>(null);
+  const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPrev(current);
+      setFading(true);
+      setCurrent(c => (c + 1) % FONDOS.length);
+      setTimeout(() => { setPrev(null); setFading(false); }, 900);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [current]);
+
+  return (
+    <section style={{ position:'relative', minHeight:'94vh', overflow:'hidden', display:'flex', alignItems:'center' }}>
+      {prev !== null && (
+        <Image key={`prev-${prev}`} src={FONDOS[prev]} alt="" fill style={{ objectFit:'cover', objectPosition:'center 20%', opacity: fading ? 0 : 1, transition:'opacity 0.9s ease', zIndex:0 }} />
+      )}
+      <Image key={`curr-${current}`} src={FONDOS[current]} alt="Amora Jewelry" fill priority style={{ objectFit:'cover', objectPosition:'center 20%', opacity:1, transition:'opacity 0.9s ease', zIndex:0 }} />
+
+      <div style={{ position:'absolute', bottom:72, left:'50%', transform:'translateX(-50%)', display:'flex', gap:8, zIndex:4 }}>
+        {FONDOS.map((_, i) => (
+          <button key={i} onClick={() => setCurrent(i)} aria-label={`Ir a la imagen ${i + 1}`} style={{ width: i===current ? 24 : 8, height:8, borderRadius:4, border:'none', cursor:'pointer', transition:'all 0.35s', background: i===current ? S.obsidian : S.nudeDark, padding:0 }} />
+        ))}
+      </div>
+
+      <div style={{ position:'relative', zIndex:3, width:'100%', padding:'0 5vw', display:'flex', justifyContent:'flex-end' }}>
+        <div className="fade-in">
+          <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
+            <a href="#joyeria" className="btn-primary">Ver Catálogo</a>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ position:'absolute', bottom:40, left:'50%', transform:'translateX(-50%)', zIndex:3, display:'flex', flexDirection:'column', alignItems:'center', gap:6 }}>
+        <span style={{ color:S.nudeDark, fontSize:'0.6rem', letterSpacing:'0.2em', textTransform:'uppercase' }}>Scroll</span>
+        <div className="float" style={{ width:1, height:36, background:`linear-gradient(to bottom,${S.nudeDark},transparent)` }} />
+      </div>
+    </section>
+  );
+}
+
+function FeaturesBar() {
+  const items = [
+    { img:'/amora_garantia.png', t:'Pago Seguro',    d:'SSL · Flow.cl' },
+    { img:'/amora_envios.png', t:'Envío a Chile',  d:'3–5 días hábiles' },
+    { img:'/amora_garantia.png', t:'Certificado',    d:'Autenticidad garantizada' },
+    { img:'/amora_sobre_nosotros.png', t:'30 días',         d:'Cambios sin costo' },
+  ];
+  return (
+    <div style={{ background:S.nude, borderBottom:`1px solid ${S.nudeDark}`, padding:'22px 2rem' }}>
+      <div style={{ maxWidth:1000, margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:24 }}>
+        {items.map(f => (
+          <div key={f.t} style={{ display:'flex', alignItems:'center', gap:12 }}>
+            <div style={{ position:'relative', width:28, height:28, flexShrink:0 }}>
+              <Image src={f.img} alt={f.t} fill style={{ objectFit:'contain' }} />
+            </div>
+            <div>
+              <div style={{ fontFamily:'Cinzel,serif', color:S.obsidian, fontSize:'0.66rem', letterSpacing:'0.12em', textTransform:'uppercase' }}>{f.t}</div>
+              <div style={{ color:S.muted, fontSize:'0.75rem', marginTop:2 }}>{f.d}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── PRODUCT CARD COMPONENT ──────────────────────────────────────────────────
+function ProductCard({ p }: { p: any }) {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  // Decide which image to show based on hover state and availability
+  const hasRefImage = Boolean(p.reference_image_url);
+  const currentImage = (isHovered && hasRefImage) ? p.reference_image_url : p.image_url;
+
+  return (
+    <article 
+      className="product-card" 
+      style={{ borderRight:`1px solid ${S.nude}`, borderBottom: `1px solid ${S.nude}`, display: 'flex', flexDirection: 'column' }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div style={{ height:260, position:'relative', overflow:'hidden', background:S.offWhite, display:'flex', alignItems:'center', justifyContent:'center' }}>
+        {currentImage ? (
+           <Image 
+             key={currentImage} // Force re-render to trigger subtle fade/zoom if desired, or just swap src
+             src={currentImage} 
+             alt={p.title} 
+             fill 
+             style={{ 
+               objectFit:'cover', 
+               transition:'transform 0.5s ease',
+               transform: isHovered ? 'scale(1.05)' : 'scale(1)'
+             }} 
+           />
+        ) : (
+          <div style={{ color: S.nudeDark, fontFamily: 'Cinzel,serif', fontSize: '0.8rem' }}>Sin imagen</div>
+        )}
+        {/* Category badge */}
+        <span style={{ position:'absolute', bottom:14, right:14, background:'rgba(253,252,248,0.9)', border:`1px solid ${S.nude}`, color:S.muted, fontFamily:'Cinzel,serif', fontSize:'0.6rem', padding:'3px 10px', letterSpacing:'0.1em' }}>
+          {p.category}
+        </span>
+      </div>
+      <div style={{ padding:'20px 20px 26px', background:S.ivory, flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <h3 className="font-display" style={{ fontSize:'1.05rem', fontWeight:400, color:S.obsidian, lineHeight:1.3, marginBottom:16 }}>
+          {p.title}
+        </h3>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop: 'auto' }}>
+          <span className="font-display" style={{ fontSize:'1.2rem', color:S.obsidian, fontWeight:300 }}>
+            ${p.sale_price.toLocaleString('es-CL')}
+          </span>
+          <button style={{
+            fontFamily:'Cinzel,serif', fontSize:'0.58rem', letterSpacing:'0.1em', textTransform:'uppercase',
+            background:'transparent', border:`1px solid ${S.nude}`, color:S.charcoal,
+            padding:'8px 14px', cursor:'pointer', transition:'all 0.25s',
+          }}
+            onMouseEnter={e=>{ e.currentTarget.style.background=S.obsidian; e.currentTarget.style.color=S.offWhite; e.currentTarget.style.borderColor=S.obsidian; }}
+            onMouseLeave={e=>{ e.currentTarget.style.background='transparent'; e.currentTarget.style.color=S.charcoal; e.currentTarget.style.borderColor=S.nude; }}
+          >Agregar</button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+// ─── DYNAMIC CATALOG (Connected to DB) ────────────────────────────────────
+function Products({ products }: { products: any[] }) {
+  const [filter, setFilter] = useState('Todos');
+  const [visibleCount, setVisibleCount] = useState(15);
+
+  const filtered = filter === 'Todos' ? products : products.filter(p => p.category === filter);
+  const shown = filtered.slice(0, visibleCount);
+
+  // Cuando cambian de filtro, volvemos a mostrar 15 por defecto
+  useEffect(() => {
+    setVisibleCount(15);
+  }, [filter]);
+
+  return (
+    <section id="joyeria" style={{ padding:'96px 2rem', background:S.ivory }}>
+      <div style={{ maxWidth:1400, margin:'0 auto' }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:48, flexWrap:'wrap', gap:20 }}>
+          <div>
+            <h2 className="font-display" style={{ fontSize:'clamp(2.5rem,5vw,3.8rem)', fontWeight:300, color:S.obsidian }}>Catálogo</h2>
+          </div>
+          <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+            {CATS.map(c => (
+              <button key={c} onClick={() => setFilter(c)} style={{
+                fontFamily:'Cinzel,serif', fontSize:'0.66rem', letterSpacing:'0.12em', textTransform:'uppercase',
+                padding:'8px 20px',
+                background: filter===c ? S.obsidian : 'transparent',
+                color: filter===c ? S.offWhite : S.muted,
+                border: filter===c ? `1px solid ${S.obsidian}` : `1px solid ${S.nude}`,
+                cursor:'pointer', transition:'all 0.25s',
+              }}>{c}</button>
+            ))}
+          </div>
+        </div>
+
+        {filtered.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '80px 20px', color: S.muted, fontSize: '1.2rem', fontFamily: 'Cinzel,serif' }}>
+            Aún no hay productos disponibles en esta categoría.
+          </div>
+        ) : (
+          <>
+            <div style={{ 
+              display:'grid', 
+              gridTemplateColumns:'repeat(auto-fill, minmax(240px, 1fr))', 
+              gap: 1, 
+              border:`1px solid ${S.nude}` 
+            }}>
+              <style>{`
+                @media (min-width: 1300px) {
+                  #joyeria .product-grid {
+                    grid-template-columns: repeat(5, 1fr) !important;
+                  }
+                }
+              `}</style>
+              <div className="product-grid" style={{ display: 'contents' }}>
+                {shown.map(p => (
+                  <ProductCard key={p.id} p={p} />
+                ))}
+              </div>
+            </div>
+
+            {/* Load More Button */}
+            {visibleCount < filtered.length && (
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 48 }}>
+                <button 
+                  onClick={() => setVisibleCount(v => v + 15)}
+                  style={{
+                    background: 'transparent',
+                    border: `1px solid ${S.obsidian}`,
+                    color: S.obsidian,
+                    fontFamily: 'Cinzel,serif',
+                    fontSize: '0.75rem',
+                    letterSpacing: '0.14em',
+                    textTransform: 'uppercase',
+                    padding: '12px 32px',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s'
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = S.obsidian; e.currentTarget.style.color = S.offWhite; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = S.obsidian; }}
+                >
+                  Cargar Más
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ─── SECOND BANNER ────────────────────────────────────────────────────────
+function SecondBanner() {
+  return (
+    <section id="novedades" style={{ position:'relative', height:520, overflow:'hidden', display:'flex', alignItems:'center' }}>
+      <Image src="/seccion-banner.png" alt="Colección Amora" fill style={{ objectFit:'cover', objectPosition:'center 20%' }} />
+      <div style={{ position:'absolute', inset:0, background:'linear-gradient(to right, rgba(16,16,16,0.75) 40%, rgba(16,16,16,0.25) 100%)' }} />
+      <div style={{ position:'relative', zIndex:1, maxWidth:1320, margin:'0 auto', padding:'0 2rem' }}>
+        <div style={{ maxWidth:500 }}>
+          <div className="amora-divider" style={{ marginBottom:20, maxWidth:290 }}>
+            <span className="line" style={{ background:'linear-gradient(90deg,transparent,rgba(212,175,55,0.5))' }} />
+            <span style={{ color:'#D4B878', fontSize:'0.82rem' }}>✦ JOYERÍA EXCLUSIVA</span>
+            <span className="line rev" style={{ background:'linear-gradient(90deg,rgba(212,175,55,0.5),transparent)' }} />
+          </div>
+          <h2 className="font-display" style={{ fontSize:'clamp(2.5rem,5vw,4.2rem)', fontWeight:300, lineHeight:1.1, color:S.offWhite, marginBottom:20 }}>
+            La elegancia en<br /><em style={{ fontStyle:'italic' }}>cada detalle</em>
+          </h2>
+          <p style={{ color:'rgba(253,252,248,0.65)', marginBottom:32, lineHeight:1.75, fontSize:'0.95rem' }}>
+            Cada pieza Amora nace de la pasión por la joyería artesanal. Diseños únicos que resaltan tu belleza natural.
+          </p>
+          <a href="#joyeria" style={{ display:'inline-flex', alignItems:'center', gap:8, background:S.offWhite, color:S.obsidian, fontFamily:'Cinzel,serif', fontSize:'0.75rem', fontWeight:600, letterSpacing:'0.14em', textTransform:'uppercase', padding:'15px 38px', textDecoration:'none', transition:'all 0.3s' }}
+            onMouseEnter={e=>e.currentTarget.style.background=S.ivory}
+            onMouseLeave={e=>e.currentTarget.style.background=S.offWhite}
+          >Explorar ahora</a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── FOOTER ───────────────────────────────────────────────────────────────
+function Footer() {
+  const cols = [
+    { t:'Joyería',     ls:['Anillos','Cadenas','Pulseras','Aros'] },
+    { t:'Ayuda',       ls:['Cómo comprar','Envíos','Cambios','Contacto'] },
+  ];
+  return (
+    <footer style={{ background:S.offWhite, borderTop:`1px solid ${S.nude}`, paddingTop:72 }}>
+      <div style={{ maxWidth:1320, margin:'0 auto', padding:'0 2rem' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'280px repeat(2,1fr)', gap:48, paddingBottom:56, borderBottom:`1px solid ${S.nude}` }}>
+          <div>
+            <Image src="/Amora_Jewelry_logo_header_480x114.png" alt="Amora Jewelry" width={140} height={33} style={{ objectFit:'contain', marginBottom:20 }} />
+            <p style={{ color:S.muted, fontSize:'0.82rem', lineHeight:1.75, marginBottom:24 }}>
+              Joyería premium diseñada para mujeres que aprecian el lujo en cada detalle.
+            </p>
+            <div style={{ display:'flex', gap:10 }}>
+              {[
+                { img: '/amora_instagram.png', href: '#', title: 'Instagram' },
+                { img: '/amora_whatsapp.png', href: '#', title: 'WhatsApp' },
+                { img: '/amora_email.png', href: '#', title: 'Email' },
+              ].map(s => (
+                <a key={s.title} href={s.href} title={s.title} style={{ width:36, height:36, border:`1px solid ${S.nude}`, display:'flex', alignItems:'center', justifyContent:'center', transition:'all 0.25s', padding: 8 }}
+                  onMouseEnter={e=>{ e.currentTarget.style.background=S.nude; }}
+                  onMouseLeave={e=>{ e.currentTarget.style.background='transparent'; }}
+                >
+                  <div style={{ position:'relative', width:'100%', height:'100%' }}>
+                    <Image src={s.img} alt={s.title} fill style={{ objectFit:'contain' }} />
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+          {cols.map(col => (
+            <div key={col.t}>
+              <div style={{ fontFamily:'Cinzel,serif', color:S.obsidian, fontSize:'0.66rem', letterSpacing:'0.16em', textTransform:'uppercase', marginBottom:20 }}>{col.t}</div>
+              {col.ls.map(l => (
+                <a key={l} href="#" style={{ display:'block', color:S.muted, fontSize:'0.85rem', textDecoration:'none', marginBottom:12, transition:'color 0.2s' }}
+                  onMouseEnter={e=>(e.currentTarget.style.color=S.obsidian)}
+                  onMouseLeave={e=>(e.currentTarget.style.color=S.muted)}
+                >{l}</a>
+              ))}
+            </div>
+          ))}
+        </div>
+        <div style={{ padding:'24px 0', display:'flex', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
+          <span style={{ color:S.nudeDark, fontSize:'0.7rem', fontFamily:'Cinzel,serif', letterSpacing:'0.08em' }}>© 2024 AMORA JEWELRY. TODOS LOS DERECHOS RESERVADOS.</span>
+          <div style={{ display:'flex', gap:20 }}>
+            {['Privacidad','Términos','Cookies'].map(t => (
+              <a key={t} href="#" style={{ color:S.nudeDark, fontSize:'0.7rem', textDecoration:'none', fontFamily:'Cinzel,serif' }}>{t}</a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// ─── FEATURED PRODUCTS ──────────────────────────────────────────────────────
+function FeaturedProducts({ products }: { products: any[] }) {
+  // Tomamos los 4 primeros productos reales de la base de datos
+  const featured = products.slice(0, 4);
+
+  if (featured.length === 0) return null;
+
+  return (
+    <section style={{ padding: '80px 2rem', background: S.offWhite }}>
+      <div style={{ maxWidth: 1320, margin: '0 auto' }}>
+        <div className="amora-divider" style={{ marginBottom: 32 }}>
+          <span className="line" />
+          <span>Selección Exclusiva</span>
+          <span className="line rev" />
+        </div>
+        <h2 className="font-display" style={{ fontSize: 'clamp(2.2rem,4vw,3.2rem)', fontWeight: 300, textAlign: 'center', color: S.obsidian, marginBottom: 56 }}>
+          Productos Destacados
+        </h2>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+          {featured.map(p => (
+            <ProductCard key={p.id} p={p} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── MAIN COMPONENT ───────────────────────────────────────────────────────
+export default function StorefrontClient({ products }: { products: any[] }) {
+  return (
+    <>
+      <PromoBar />
+      <Navbar />
+      <main>
+        {/* Usamos h1 invisible para SEO general si es necesario, o que el Hero contenga el título principal. */}
+        <h1 className="sr-only" style={{ display: 'none' }}>Amora Jewelry - Joyería Premium en Chile</h1>
+        
+        <Hero />
+        <FeaturesBar />
+        <FeaturedProducts products={products} />
+        <Products products={products} />
+        <SecondBanner />
+      </main>
+      <Footer />
+
+      {/* Floating WhatsApp Button */}
+      <a href="https://wa.me/569XXXXXXXX" target="_blank" rel="noopener noreferrer" aria-label="Contáctanos por WhatsApp" style={{
+        position:'fixed', bottom:30, right:30, zIndex:1000,
+        width:56, height:56, borderRadius:'50%',
+        background:'#FFFFFF', border:'1px solid #E3DBCC',
+        boxShadow:'0 4px 16px rgba(0,0,0,0.1)',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        transition:'transform 0.3s ease, box-shadow 0.3s ease',
+        padding:12
+      }}
+        onMouseEnter={e=>{ e.currentTarget.style.transform='scale(1.1)'; e.currentTarget.style.boxShadow='0 6px 20px rgba(184,151,90,0.3)'; }}
+        onMouseLeave={e=>{ e.currentTarget.style.transform='scale(1)'; e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.1)'; }}
+      >
+        <div style={{ position:'relative', width:'100%', height:'100%' }}>
+          <Image src="/amora_whatsapp.png" alt="WhatsApp" fill style={{ objectFit:'contain' }} />
+        </div>
+      </a>
+    </>
+  );
+}
