@@ -67,7 +67,7 @@ function StatusContent() {
             onClick={() => router.push('/')}
             style={{
               padding: '12px 24px',
-              background: T.obsidian,
+              background: T.primary,
               color: '#fff',
               border: 'none',
               borderRadius: '8px',
