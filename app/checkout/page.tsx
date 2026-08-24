@@ -4,10 +4,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { REGIONS } from '../../lib/shippingRates';
-import { PICKUP_POINTS } from '../../lib/pickupPoints';
-import { REGION_COMUNAS } from '../../lib/chileData';
-import { supabase } from '../../lib/supabase/client';
+import { REGIONS } from '@/lib/shippingRates';
+import { PICKUP_POINTS } from '@/lib/pickupPoints';
+import { REGION_COMUNAS } from '@/lib/chileData';
+import { supabase } from '@/lib/supabase/client';
+import { createOrderSecurely } from '@/app/actions/order';
 
 const S = {
   offWhite: '#FDFCF8',
@@ -88,7 +89,7 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
     try {
-      const { data: orderData, error: orderError } = await supabase.from('orders').insert({
+      const orderPayload = {
         client_name: `${clientName} ${clientLastname}`.trim(),
         client_rut: clientRut,
         client_email: clientEmail,
@@ -103,21 +104,17 @@ export default function CheckoutPage() {
         shipping_cost: shippingCost,
         total: finalTotal,
         status: 'Pendiente'
-      }).select().single();
+      };
 
-      if (orderError) throw orderError;
-
-      const itemsToInsert = cart.map(item => ({
-        order_id: orderData.id,
-        product_id: Number(item.productId || item.id), // Fallback in case old cart items exist
+      const itemsPayload = cart.map(item => ({
+        product_id: Number(item.productId || item.id), // Fallback
         product_title: item.title,
         quantity: item.quantity,
         price: item.price,
         size: item.size || null
       }));
 
-      const { error: itemsError } = await supabase.from('order_items').insert(itemsToInsert);
-      if (itemsError) throw itemsError;
+      const orderData = await createOrderSecurely(orderPayload, itemsPayload);
 
       // ─── INTEGRACIÓN FLOW ──────────────────────────────────────────
       try {
