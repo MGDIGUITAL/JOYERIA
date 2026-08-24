@@ -107,7 +107,7 @@ export default async function BalancePage() {
               {Object.entries(expensesByCategory).map(([category, amount]) => (
                 <div key={category} style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '8px', fontSize: '0.9rem' }}>
                   <span style={{ color: T.textMuted }}>• {category}</span>
-                  <span style={{ color: T.danger }}>- {formatClp(amount)}</span>
+                  <span style={{ color: T.danger }}>- {formatClp(Number(amount))}</span>
                 </div>
               ))}
             </div>
