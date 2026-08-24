@@ -31,6 +31,9 @@ export const metadata: Metadata = {
     title: 'Amora Jewelry | Alta Joyería Premium en Chile',
     description: 'Descubre nuestra colección exclusiva de anillos, collares y pulseras.',
   },
+  verification: {
+    google: 'CI-f2dlJntCu_el7bJVCmy5ZA99_hjiPFJN6upPIP3g',
+  },
 };
 
 import { CartProvider } from './components/CartContext';
