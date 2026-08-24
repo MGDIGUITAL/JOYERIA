@@ -221,7 +221,12 @@ function ProductCard({ p }: { p: any }) {
              />
            </div>
         ) : (
-          <div style={{ color: S.nudeDark, fontFamily: 'Cinzel,serif', fontSize: '0.8rem' }}>Sin imagen</div>
+          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:12, opacity:0.35 }}>
+            <div style={{ position:'relative', width:64, height:64 }}>
+              <Image src={`/amora_${(p.category || 'collares').toLowerCase().replace('é','e').replace('a','a')}.png`} alt={p.category} fill style={{ objectFit:'contain' }} onError={() => {}} />
+            </div>
+            <span style={{ color:S.nudeDark, fontFamily:'Cinzel,serif', fontSize:'0.65rem', letterSpacing:'0.1em', textTransform:'uppercase' }}>Imagen próximamente</span>
+          </div>
         )}
         {/* Category badge */}
         <span style={{ position:'absolute', bottom:14, right:14, background:'rgba(253,252,248,0.9)', border:`1px solid ${S.nude}`, color:S.muted, fontFamily:'Cinzel,serif', fontSize:'0.6rem', padding:'3px 10px', letterSpacing:'0.1em' }}>
