@@ -171,7 +171,7 @@ export default function CheckoutPage() {
       <div className="checkout-layout">
         {/* LADO IZQUIERDO: FORMULARIO */}
         <section className="checkout-left">
-          <h2 style={sectionTitleStyle} style={{ marginTop: 0 }}>Información de Contacto</h2>
+          <h2 style={{ ...sectionTitleStyle, marginTop: 0 }}>Información de Contacto</h2>
           <div style={{ display: 'flex', gap: 16 }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>Correo Electrónico *</label>
