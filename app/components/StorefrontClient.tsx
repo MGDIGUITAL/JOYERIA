@@ -261,10 +261,10 @@ function Hero() {
 
 function FeaturesBar() {
   const items = [
-    { img:'/amora_garantia.png', t:'Pago Seguro',    d:'SSL · Flow.cl' },
-    { img:'/amora_envios.png', t:'Envío a Chile',  d:'3–5 días hábiles' },
-    { img:'/amora_garantia.png', t:'Certificado',    d:'Autenticidad garantizada' },
-    { img:'/amora_sobre_nosotros.png', t:'30 días',         d:'Cambios sin costo' },
+    { img:'/amora_garantia.png', t:'Inversión Protegida',    d:'Transacciones 100% encriptadas' },
+    { img:'/amora_envios.png', t:'Despacho Premium',  d:'Discreción y rapidez a todo Chile' },
+    { img:'/amora_garantia.png', t:'Sello de Autenticidad',    d:'Materiales nobles y genuinos' },
+    { img:'/amora_sobre_nosotros.png', t:'Experiencia Amora',         d:'30 días para enamorarte o cambiarlo' },
   ];
   return (
     <div style={{ background:S.nude, borderBottom:`1px solid ${S.nudeDark}`, padding:'22px 2rem' }}>
