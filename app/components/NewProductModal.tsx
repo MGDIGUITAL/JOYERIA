@@ -186,11 +186,11 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
       fd.append('salePrice', String(data.salePrice));
       if (data.costPrice !== undefined) fd.append('costPrice', String(data.costPrice));
       fd.append('sku', data.sku || '');
-      fd.append('isUnlimitedStock', String(data.isUnlimitedStock));
+      fd.append('isUnlimitedStock', String(data.isUnlimitedStock ?? true));
       if (!data.isUnlimitedStock && data.stockQuantity !== undefined) {
         fd.append('stockQuantity', String(data.stockQuantity));
       }
-      fd.append('shippingProfileId', data.shippingProfileId);
+      fd.append('shippingProfileId', data.shippingProfileId || 'shipping_standard');
       if (data.weight !== undefined) fd.append('weight', String(data.weight));
       fd.append('dimensions', data.dimensions || '');
       fd.append('status', status);
