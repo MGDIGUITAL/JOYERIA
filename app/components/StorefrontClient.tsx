@@ -307,7 +307,8 @@ function ProductCard({ p }: { p: any }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div style={{ height:260, position:'relative', overflow:'hidden', background:S.offWhite, display:'flex', alignItems:'center', justifyContent:'center', padding: '10px' }}>
+      <Link href={`/product/${p.id}`} style={{ display: 'block', height:260, position:'relative', overflow:'hidden', background:S.offWhite, padding: '10px' }}>
+        <div style={{ width: '100%', height: '100%', display:'flex', alignItems:'center', justifyContent:'center' }}>
         {currentImage ? (
            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
              <Image 
@@ -334,11 +335,14 @@ function ProductCard({ p }: { p: any }) {
         <span style={{ position:'absolute', bottom:14, right:14, background:'rgba(253,252,248,0.9)', border:`1px solid ${S.nude}`, color:S.muted, fontFamily:'Cinzel,serif', fontSize:'0.6rem', padding:'3px 10px', letterSpacing:'0.1em' }}>
           {p.category}
         </span>
-      </div>
+        </div>
+      </Link>
       <div style={{ padding:'20px 20px 26px', background:S.ivory, flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <h3 className="font-display" style={{ fontSize:'1.05rem', fontWeight:400, color:S.obsidian, lineHeight:1.3, marginBottom:16 }}>
-          {p.title}
-        </h3>
+        <Link href={`/product/${p.id}`} style={{ textDecoration: 'none' }}>
+          <h3 className="font-display" style={{ fontSize:'1.05rem', fontWeight:400, color:S.obsidian, lineHeight:1.3, marginBottom:16, cursor: 'pointer' }}>
+            {p.title}
+          </h3>
+        </Link>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop: 'auto' }}>
           <span className="font-display" style={{ fontSize:'1.2rem', color:S.obsidian, fontWeight:300 }} suppressHydrationWarning>
             ${p.sale_price.toLocaleString('es-CL')}
