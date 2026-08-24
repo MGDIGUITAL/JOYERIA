@@ -84,7 +84,7 @@ export async function POST(request: Request) {
     const info = await transporter.sendMail({
       from: '"Amora Jewelry" <' + process.env.GMAIL_USER + '>',
       to: email,
-      subject: \`Tu pedido #\${orderId} va en camino 📦\`,
+      subject: `Tu pedido #${orderId} va en camino 📦`,
       html: OrderShippedHtml(orderId, name, method, address),
     });
 

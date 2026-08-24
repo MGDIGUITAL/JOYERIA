@@ -85,7 +85,7 @@ export async function POST(request: Request) {
     const info = await transporter.sendMail({
       from: '"Amora Jewelry" <' + process.env.GMAIL_USER + '>',
       to: email,
-      subject: \`Confirmación de Pedido #\${orderId} - Amora Jewelry\`,
+      subject: `Confirmación de Pedido #${orderId} - Amora Jewelry`,
       html: OrderConfirmationHtml(orderId, name, total, method, address),
     });
 
