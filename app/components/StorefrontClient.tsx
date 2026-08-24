@@ -116,9 +116,11 @@ function Hero() {
     <section style={{ position:'relative', minHeight:'94vh', overflow:'hidden', display:'flex', alignItems:'center' }}>
       <style>{`
         .hero-img-mobile { display: none !important; }
+        .hero-btn-container { justify-content: flex-end; padding: 0 5vw; }
         @media (max-width: 768px) {
           .hero-img-desktop { display: none !important; }
           .hero-img-mobile { display: block !important; }
+          .hero-btn-container { justify-content: center !important; padding: 0 !important; }
         }
       `}</style>
 
@@ -140,7 +142,7 @@ function Hero() {
         ))}
       </div>
 
-      <div style={{ position:'relative', zIndex:3, width:'100%', display:'flex', justifyContent:'center' }}>
+      <div className="hero-btn-container" style={{ position:'relative', zIndex:3, width:'100%', display:'flex' }}>
         <div className="fade-in">
           <div style={{ display:'flex', gap:16, flexWrap:'wrap', justifyContent:'center' }}>
             <a href="#joyeria" className="btn-primary">Ver Catálogo</a>
