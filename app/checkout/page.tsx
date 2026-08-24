@@ -7,8 +7,6 @@ import { useRouter } from 'next/navigation';
 import { REGIONS } from '@/lib/shippingRates';
 import { PICKUP_POINTS } from '@/lib/pickupPoints';
 import { REGION_COMUNAS } from '@/lib/chileData';
-import { supabase } from '@/lib/supabase/client';
-import { createOrderSecurely } from '@/app/actions/order';
 
 const S = {
   offWhite: '#FDFCF8',
@@ -114,7 +112,17 @@ export default function CheckoutPage() {
         size: item.size || null
       }));
 
-      const orderData = await createOrderSecurely(orderPayload, itemsPayload);
+      // Crear orden via API route segura (bypassa RLS)
+      const createOrderRes = await fetch('/api/checkout/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderPayload, itemsPayload })
+      });
+
+      const createOrderData = await createOrderRes.json();
+      if (!createOrderRes.ok) throw new Error(createOrderData.error || 'Error creando orden');
+
+      const orderData = createOrderData.order;
 
       // ─── INTEGRACIÓN FLOW ──────────────────────────────────────────
       try {
