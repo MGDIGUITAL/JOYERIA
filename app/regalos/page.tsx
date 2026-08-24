@@ -68,7 +68,16 @@ function Navbar() {
 function Hero() {
   return (
     <section style={{ position: 'relative', minHeight: '60vh', overflow: 'hidden', display: 'flex', alignItems: 'center', background: S.obsidian }}>
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(16,16,16,0.95) 0%, rgba(16,16,16,0.6) 100%)', zIndex: 1 }} />
+      <video 
+        autoPlay 
+        loop 
+        muted 
+        playsInline 
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
+      >
+        <source src="https://res.cloudinary.com/ddqx435i5/video/upload/Woman_showcasing_jewelry_202608232038_f7utno.mp4" type="video/mp4" />
+      </video>
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(16,16,16,0.95) 0%, rgba(16,16,16,0.4) 100%)', zIndex: 1 }} />
       <div style={{ position: 'relative', zIndex: 3, width: '100%', maxWidth: 1320, margin: '0 auto', padding: '0 2rem', display: 'flex', justifyContent: 'flex-end' }}>
         <div style={{ maxWidth: 600, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', textAlign: 'right' }}>
           <h1 className="font-display" style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', fontWeight: 300, color: S.offWhite, lineHeight: 1.1, marginBottom: 24 }}>
