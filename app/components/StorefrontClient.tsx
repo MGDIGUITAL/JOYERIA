@@ -94,7 +94,8 @@ function Navbar() {
 }
 
 // ─── HERO ─────────────────────────────────────────────────────────────────
-const FONDOS = ['/fondo-1.png','/fondo-2.png','/fondo-3.png','/fondo-4.png','/fondo-5.png'];
+const FONDOS_DESKTOP = ['/Fondo 1.png', '/Fondo 2.png', '/Fondo 3.png', '/Fondo 4.png', '/fondo 5.png'];
+const FONDOS_MOBILE = ['/fondo 1 Movil.png', '/Fondo 2 Movil.png', '/Fondo 3 Movil.png', '/Fondo 4 Movil.png', '/Fondo 5 Movil.png'];
 
 function Hero() {
   const [current, setCurrent] = useState(0);
@@ -105,7 +106,7 @@ function Hero() {
     const interval = setInterval(() => {
       setPrev(current);
       setFading(true);
-      setCurrent(c => (c + 1) % FONDOS.length);
+      setCurrent(c => (c + 1) % FONDOS_DESKTOP.length);
       setTimeout(() => { setPrev(null); setFading(false); }, 900);
     }, 4000);
     return () => clearInterval(interval);
@@ -113,13 +114,28 @@ function Hero() {
 
   return (
     <section style={{ position:'relative', minHeight:'94vh', overflow:'hidden', display:'flex', alignItems:'center' }}>
+      <style>{`
+        .hero-img-mobile { display: none !important; }
+        @media (max-width: 768px) {
+          .hero-img-desktop { display: none !important; }
+          .hero-img-mobile { display: block !important; }
+        }
+      `}</style>
+
+      {/* Prev Image (Crossfade) */}
       {prev !== null && (
-        <Image key={`prev-${prev}`} src={FONDOS[prev]} alt="" fill style={{ objectFit:'cover', objectPosition:'center 20%', opacity: fading ? 0 : 1, transition:'opacity 0.9s ease', zIndex:0 }} />
+        <>
+          <Image className="hero-img-desktop" key={`prev-d-${prev}`} src={FONDOS_DESKTOP[prev]} alt="" fill style={{ objectFit:'cover', objectPosition:'center 20%', opacity: fading ? 0 : 1, transition:'opacity 0.9s ease', zIndex:0 }} />
+          <Image className="hero-img-mobile" key={`prev-m-${prev}`} src={FONDOS_MOBILE[prev]} alt="" fill style={{ objectFit:'cover', objectPosition:'center 20%', opacity: fading ? 0 : 1, transition:'opacity 0.9s ease', zIndex:0 }} />
+        </>
       )}
-      <Image key={`curr-${current}`} src={FONDOS[current]} alt="Amora Jewelry" fill priority style={{ objectFit:'cover', objectPosition:'center 20%', opacity:1, transition:'opacity 0.9s ease', zIndex:0 }} />
+
+      {/* Current Image */}
+      <Image className="hero-img-desktop" key={`curr-d-${current}`} src={FONDOS_DESKTOP[current]} alt="Amora Jewelry" fill priority style={{ objectFit:'cover', objectPosition:'center 20%', opacity:1, transition:'opacity 0.9s ease', zIndex:0 }} />
+      <Image className="hero-img-mobile" key={`curr-m-${current}`} src={FONDOS_MOBILE[current]} alt="Amora Jewelry" fill priority style={{ objectFit:'cover', objectPosition:'center 20%', opacity:1, transition:'opacity 0.9s ease', zIndex:0 }} />
 
       <div style={{ position:'absolute', bottom:72, left:'50%', transform:'translateX(-50%)', display:'flex', gap:8, zIndex:4 }}>
-        {FONDOS.map((_, i) => (
+        {FONDOS_DESKTOP.map((_, i) => (
           <button key={i} onClick={() => setCurrent(i)} aria-label={`Ir a la imagen ${i + 1}`} style={{ width: i===current ? 24 : 8, height:8, borderRadius:4, border:'none', cursor:'pointer', transition:'all 0.35s', background: i===current ? S.obsidian : S.nudeDark, padding:0 }} />
         ))}
       </div>
