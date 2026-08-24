@@ -4,7 +4,6 @@ import { supabaseAdmin } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
   try {
-    // Flow envía los datos como x-www-form-urlencoded
     const formData = await request.formData();
     const token = formData.get('token') as string;
 
@@ -25,21 +24,21 @@ export async function POST(request: Request) {
       newStatus = 'Cancelado';
     }
 
-    // Actualizamos la orden en Supabase usando Supabase Admin (bypasea RLS)
+    // Actualizamos la orden en Supabase (status + token de referencia)
     const { error: updateError } = await supabaseAdmin
       .from('orders')
-      .update({ status: newStatus })
+      .update({ 
+        status: newStatus,
+        flow_token: token,
+        flow_status: paymentStatus.status
+      })
       .eq('id', orderId);
 
     if (updateError) {
       console.error('Error actualizando orden tras webhook:', updateError);
-      return NextResponse.json({ error: 'Error DB' }, { status: 500 });
     }
 
-    // TODO: Si el status es 2 (Pagado), podríamos enviar el correo de confirmación aquí
-    // invocando la API de envío de correos o Resend directamente.
-
-    // Siempre retornar HTTP 200 a Flow para que sepan que recibimos el aviso
+    // Siempre retornar HTTP 200 a Flow
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Error en Webhook de Flow:', error);
