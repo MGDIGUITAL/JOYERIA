@@ -51,6 +51,7 @@ export async function createProduct(formData: FormData): Promise<ActionResult> {
       weight:           formData.get('weight') ? Number(formData.get('weight')) : undefined,
       dimensions:       formData.get('dimensions') as string || '',
       status:           formData.get('status') as string || 'active',
+      sizes:            formData.get('sizes') ? JSON.parse(formData.get('sizes') as string) : [],
     };
 
     // 2. Validate with Zod
@@ -104,6 +105,7 @@ export async function createProduct(formData: FormData): Promise<ActionResult> {
       weight:              validated.weight ?? null,
       dimensions:          validated.dimensions || null,
       status:              validated.status,
+      sizes:               validated.sizes.length > 0 ? validated.sizes : null,
       created_at:          new Date().toISOString(),
     };
 

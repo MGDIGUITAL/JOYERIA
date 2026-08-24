@@ -77,6 +77,9 @@ export const productSchema = z
 
     // ── Status ──
     status: z.enum(['draft', 'active']).default('active'),
+
+    // ── Sizes ──
+    sizes: z.array(z.string()).optional().default([]),
   })
 
   // ── Conditional stock validation ──

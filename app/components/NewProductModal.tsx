@@ -87,6 +87,7 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
       weight: undefined,
       dimensions: '',
       status: 'active',
+      sizes: [],
     },
   });
 
@@ -107,6 +108,7 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
           weight: productToEdit.weight || undefined,
           dimensions: productToEdit.dimensions || '',
           status: productToEdit.status,
+          sizes: productToEdit.sizes || [],
         });
         setImagePreview(productToEdit.image_url || null);
         setRefImagePreview(productToEdit.reference_image_url || null);
@@ -124,6 +126,7 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
           weight: undefined,
           dimensions: '',
           status: 'active',
+          sizes: [],
         });
         setImagePreview(null);
         setRefImagePreview(null);
@@ -134,6 +137,7 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
   }, [isOpen, productToEdit, reset]);
 
   const isUnlimited = watch('isUnlimitedStock');
+  const category = watch('category');
 
   // ── Image handling helpers ──────────────────────────────────────────────────
   const validateImage = (file: File) => {
@@ -194,6 +198,7 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
       if (data.weight !== undefined) fd.append('weight', String(data.weight));
       fd.append('dimensions', data.dimensions || '');
       fd.append('status', status);
+      fd.append('sizes', JSON.stringify(data.sizes || []));
       
       if (imageFile) fd.append('image', imageFile);
       if (refImageFile) fd.append('referenceImage', refImageFile);
@@ -471,6 +476,43 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
                   )}
                 </div>
               </div>
+              
+              {/* ── Tallas (Condicional) ── */}
+              {category === 'Anillos' && (
+                <div>
+                  <div style={{ fontFamily: 'Cinzel, serif', color: C.gold, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>
+                    Tallas Disponibles
+                  </div>
+                  <div style={{
+                    padding: 16, border: `1px solid ${C.border}`, borderRadius: 10,
+                    background: C.bg, display: 'flex', gap: 12, flexWrap: 'wrap'
+                  }}>
+                    <Controller
+                      control={control}
+                      name="sizes"
+                      render={({ field }) => (
+                        <>
+                          {['5', '6', '7', '8', '9', '10', '11', '12'].map(size => (
+                            <label key={size} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', background: field.value?.includes(size) ? 'rgba(212,175,55,0.15)' : 'transparent', border: `1px solid ${field.value?.includes(size) ? C.gold : C.border}`, padding: '4px 12px', borderRadius: 20, transition: 'all 0.2s' }}>
+                              <input
+                                type="checkbox"
+                                style={{ display: 'none' }}
+                                checked={field.value?.includes(size) || false}
+                                onChange={(e) => {
+                                  const current = field.value || [];
+                                  if (e.target.checked) field.onChange([...current, size]);
+                                  else field.onChange(current.filter((s: string) => s !== size));
+                                }}
+                              />
+                              <span style={{ fontSize: '0.8rem', color: field.value?.includes(size) ? C.gold : C.textDim, fontWeight: field.value?.includes(size) ? 600 : 400 }}>Talla {size}</span>
+                            </label>
+                          ))}
+                        </>
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

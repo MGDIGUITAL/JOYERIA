@@ -27,16 +27,24 @@ export default function ProductDetailClient({ product }: { product: any }) {
     galleryImages.push(product.reference_image_url);
   }
 
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+
   const handleAddToCart = () => {
-    // Si en el futuro agregas selector de tallas, puedes pasarlo aquí.
-    addToCart({
-      id: product.id,
-      title: product.title,
-      price: product.sale_price,
-      imageUrl: product.image_url,
-      quantity: 1,
-    });
-    openCart();
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+      alert('Por favor, selecciona una talla antes de añadir a la bolsa.');
+      return;
+    }
+
+    addToCart(
+      {
+        id: product.id,
+        title: product.title,
+        price: product.sale_price,
+        image_url: product.image_url,
+      },
+      1,
+      selectedSize || undefined
+    );
   };
 
   return (
@@ -102,6 +110,37 @@ export default function ProductDetailClient({ product }: { product: any }) {
           <p style={{ color: S.muted, fontSize: '0.95rem', lineHeight: 1.8, marginBottom: '40px', whiteSpace: 'pre-wrap' }}>
             {product.description}
           </p>
+
+          {/* Selector de Tallas */}
+          {product.sizes && product.sizes.length > 0 && (
+            <div style={{ marginBottom: '30px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <span style={{ fontSize: '0.9rem', color: S.obsidian, fontWeight: 600 }}>Talla:</span>
+                <Link href="#" style={{ fontSize: '0.8rem', color: S.muted, textDecoration: 'underline' }}>Guía de tallas</Link>
+              </div>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                {product.sizes.map((size: string) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    style={{
+                      padding: '10px 16px',
+                      background: selectedSize === size ? S.obsidian : 'transparent',
+                      color: selectedSize === size ? S.offWhite : S.obsidian,
+                      border: `1px solid ${selectedSize === size ? S.obsidian : S.nudeDark}`,
+                      cursor: 'pointer',
+                      borderRadius: '4px',
+                      fontSize: '0.9rem',
+                      fontWeight: selectedSize === size ? 600 : 400,
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <button 
             onClick={handleAddToCart}

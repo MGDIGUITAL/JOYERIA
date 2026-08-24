@@ -77,7 +77,7 @@ export default function CartSidebar() {
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <h4 style={{ margin: 0, fontSize: '0.9rem', color: S.obsidian, fontWeight: 400, fontFamily: 'Inter, sans-serif', paddingRight: 8 }}>
-                        {item.title}
+                        {item.title} {item.size && <span style={{ color: S.muted, fontSize: '0.8rem', marginLeft: '6px' }}>(Talla: {item.size})</span>}
                       </h4>
                       <button 
                         onClick={() => removeFromCart(item.id)}

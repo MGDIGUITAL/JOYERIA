@@ -109,10 +109,11 @@ export default function CheckoutPage() {
 
       const itemsToInsert = cart.map(item => ({
         order_id: orderData.id,
-        product_id: item.id,
+        product_id: Number(item.productId || item.id), // Fallback in case old cart items exist
         product_title: item.title,
         quantity: item.quantity,
-        price: item.price
+        price: item.price,
+        size: item.size || null
       }));
 
       const { error: itemsError } = await supabase.from('order_items').insert(itemsToInsert);

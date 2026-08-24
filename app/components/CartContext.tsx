@@ -2,17 +2,19 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export interface CartItem {
-  id: string;
+  id: string; // The cart item ID (product.id or product.id + size)
+  productId: string;
   title: string;
   price: number;
   image_url: string | null;
   quantity: number;
+  size?: string;
 }
 
 interface CartContextType {
   cart: CartItem[];
   isCartOpen: boolean;
-  addToCart: (product: any, quantity?: number) => void;
+  addToCart: (product: any, quantity?: number, size?: string) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   openCart: () => void;
@@ -46,22 +48,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [cart, isMounted]);
 
-  const addToCart = (product: any, quantity = 1) => {
+  const addToCart = (product: any, quantity = 1, size?: string) => {
+    const cartItemId = size ? `${product.id}-${size}` : String(product.id);
+    
     setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
+      const existing = prev.find(item => item.id === cartItemId);
       if (existing) {
         return prev.map(item => 
-          item.id === product.id 
+          item.id === cartItemId 
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       }
       return [...prev, {
-        id: product.id,
+        id: cartItemId,
+        productId: String(product.id),
         title: product.title,
         price: product.sale_price || product.price || 0,
         image_url: product.image_url,
-        quantity
+        quantity,
+        size
       }];
     });
     setIsCartOpen(true);
