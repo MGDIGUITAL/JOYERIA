@@ -21,6 +21,7 @@ interface CartContextType {
   closeCart: () => void;
   cartCount: number;
   cartTotal: number;
+  clearCart: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -89,6 +90,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
+  const clearCart = () => setCart([]);
 
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
   const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -96,14 +98,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Return empty initially for SSR to avoid hydration mismatch
   if (!isMounted) {
     return (
-      <CartContext.Provider value={{ cart: [], isCartOpen: false, addToCart, removeFromCart, updateQuantity, openCart, closeCart, cartCount: 0, cartTotal: 0 }}>
+      <CartContext.Provider value={{ cart: [], isCartOpen: false, addToCart, removeFromCart, updateQuantity, openCart, closeCart, clearCart, cartCount: 0, cartTotal: 0 }}>
         {children}
       </CartContext.Provider>
     );
   }
 
   return (
-    <CartContext.Provider value={{ cart, isCartOpen, addToCart, removeFromCart, updateQuantity, openCart, closeCart, cartCount, cartTotal }}>
+    <CartContext.Provider value={{ cart, isCartOpen, addToCart, removeFromCart, updateQuantity, openCart, closeCart, clearCart, cartCount, cartTotal }}>
       {children}
     </CartContext.Provider>
   );
