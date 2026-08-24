@@ -140,9 +140,9 @@ function Hero() {
         ))}
       </div>
 
-      <div style={{ position:'relative', zIndex:3, width:'100%', padding:'0 5vw', display:'flex', justifyContent:'flex-end' }}>
+      <div style={{ position:'relative', zIndex:3, width:'100%', display:'flex', justifyContent:'center' }}>
         <div className="fade-in">
-          <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
+          <div style={{ display:'flex', gap:16, flexWrap:'wrap', justifyContent:'center' }}>
             <a href="#joyeria" className="btn-primary">Ver Catálogo</a>
           </div>
         </div>
