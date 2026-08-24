@@ -261,7 +261,7 @@ function Hero() {
 
 function FeaturesBar() {
   const items = [
-    { img:'/amora_garantia.png', t:'Inversión Protegida',    d:'Transacciones 100% encriptadas' },
+    { img:'/amora_garantia.png', t:'Inversión Protegida',    d:'Garantía de privacidad absoluta' },
     { img:'/amora_envios.png', t:'Despacho Premium',  d:'Discreción y rapidez a todo Chile' },
     { img:'/amora_garantia.png', t:'Sello de Autenticidad',    d:'Materiales nobles y genuinos' },
     { img:'/amora_sobre_nosotros.png', t:'Experiencia Amora',         d:'30 días para enamorarte o cambiarlo' },
