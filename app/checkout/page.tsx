@@ -42,7 +42,7 @@ export default function CheckoutPage() {
   const baseShippingCost = selectedRegion ? selectedRegion.shippingCost : 0;
   // Añadimos un recargo estimado para despacho a domicilio (aprox 25% extra) por ir puerta a puerta desde Santiago
   const homeDeliverySurcharge = deliveryMethod === 'domicilio' && selectedRegion ? Math.ceil((baseShippingCost * 0.25) / 100) * 100 : 0;
-  const shippingCost = baseShippingCost + homeDeliverySurcharge;
+  const shippingCost = 0; // baseShippingCost + homeDeliverySurcharge; // TEMPORAL PARA PRUEBAS
   const finalTotal = cartTotal + shippingCost;
 
   // Filtrar comunas y puntos de retiro
