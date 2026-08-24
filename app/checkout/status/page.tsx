@@ -1,12 +1,12 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useCart } from '@/app/components/CartContext';
 import { T } from '@/app/admin/components/shared';
 
-export default function CheckoutStatusPage() {
+function StatusContent() {
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams ? searchParams.get('token') : null;
   const router = useRouter();
   const { clearCart } = useCart();
   
@@ -20,11 +20,6 @@ export default function CheckoutStatusPage() {
       return;
     }
 
-    // Consultamos nuestro propio webhook o endpoint de estado para ver cómo quedó la orden.
-    // O mejor, podemos usar un endpoint específico para el frontend que devuelva el status de la orden.
-    // Por simplicidad, asumiremos que si llega con token y no está rechazado en Flow,
-    // el webhook ya hizo su trabajo. Pero validémoslo vía un nuevo endpoint o directo a Flow.
-    
     const verifyPayment = async () => {
       try {
         const res = await fetch(`/api/checkout/flow-status?token=${token}`);
@@ -85,5 +80,13 @@ export default function CheckoutStatusPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CheckoutStatusPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '80px', textAlign: 'center' }}>Cargando estado...</div>}>
+      <StatusContent />
+    </Suspense>
   );
 }
