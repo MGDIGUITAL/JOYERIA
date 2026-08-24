@@ -165,7 +165,13 @@ function FeaturesBar() {
   ];
   return (
     <div style={{ background:S.nude, borderBottom:`1px solid ${S.nudeDark}`, padding:'22px 2rem' }}>
-      <div style={{ maxWidth:1000, margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:24 }}>
+      <style>{`
+        .features-grid { display: grid; gap: 24px; grid-template-columns: repeat(4, 1fr); }
+        @media (max-width: 768px) {
+          .features-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 10px 0; }
+        }
+      `}</style>
+      <div className="features-grid" style={{ maxWidth:1000, margin:'0 auto' }}>
         {items.map(f => (
           <div key={f.t} style={{ display:'flex', alignItems:'center', gap:12 }}>
             <div style={{ position:'relative', width:28, height:28, flexShrink:0 }}>
@@ -197,19 +203,21 @@ function ProductCard({ p }: { p: any }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div style={{ height:260, position:'relative', overflow:'hidden', background:S.offWhite, display:'flex', alignItems:'center', justifyContent:'center' }}>
+      <div style={{ height:260, position:'relative', overflow:'hidden', background:S.offWhite, display:'flex', alignItems:'center', justifyContent:'center', padding: '10px' }}>
         {currentImage ? (
-           <Image 
-             key={currentImage} // Force re-render to trigger subtle fade/zoom if desired, or just swap src
-             src={currentImage} 
-             alt={p.title} 
-             fill 
-             style={{ 
-               objectFit:'cover', 
-               transition:'transform 0.5s ease',
-               transform: isHovered ? 'scale(1.05)' : 'scale(1)'
-             }} 
-           />
+           <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+             <Image 
+               key={currentImage} 
+               src={currentImage} 
+               alt={p.title} 
+               fill 
+               style={{ 
+                 objectFit:'contain', 
+                 transition:'transform 0.5s ease',
+                 transform: isHovered ? 'scale(1.05)' : 'scale(1)'
+               }} 
+             />
+           </div>
         ) : (
           <div style={{ color: S.nudeDark, fontFamily: 'Cinzel,serif', fontSize: '0.8rem' }}>Sin imagen</div>
         )}
