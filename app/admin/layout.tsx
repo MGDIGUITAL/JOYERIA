@@ -49,13 +49,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // Extract the active page name from pathname
   let pageName = 'Analíticas';
-  if (pathname.includes('/productos')) pageName = 'Productos';
-  else if (pathname.includes('/ventas')) pageName = 'Ventas';
-  else if (pathname.includes('/clientes')) pageName = 'Clientes';
-  else if (pathname.includes('/envios')) pageName = 'Envíos';
-  else if (pathname.includes('/cupones')) pageName = 'Cupones';
-  else if (pathname.includes('/mensajes')) pageName = 'Mensajes';
-  else if (pathname.includes('/balance')) pageName = 'Balance';
+  const path = pathname || '';
+  if (path.includes('/productos')) pageName = 'Productos';
+  else if (path.includes('/ventas')) pageName = 'Ventas';
+  else if (path.includes('/clientes')) pageName = 'Clientes';
+  else if (path.includes('/envios')) pageName = 'Envíos';
+  else if (path.includes('/configuracion')) pageName = 'Configuración';
+  else if (path.includes('/mensajes')) pageName = 'Mensajes';
+  else if (path.includes('/balance')) pageName = 'Balance';
 
   return (
     <div style={{
@@ -94,14 +95,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Nav Links */}
         <nav style={{ flex: 1, padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '4px', overflowY: 'auto' }}>
-          <NavItem icon={<Icons.Analytics />} label="Analíticas" href="/admin" active={pathname === '/admin'} />
-          <NavItem icon={<Icons.Products />} label="Ventas" href="/admin/ventas" active={pathname.includes('/ventas')} />
-          <NavItem icon={<Icons.Storefront />} label="Productos" href="/admin/productos" active={pathname.includes('/productos')} />
-          <NavItem icon={<Icons.Truck />} label="Envíos" href="/admin/envios" active={pathname.includes('/envios')} />
-          <NavItem icon={<Icons.Customers />} label="Clientes" href="/admin/clientes" active={pathname.includes('/clientes')} />
-          <NavItem icon={<Icons.Ticket />} label="Cupones" href="/admin/cupones" active={pathname.includes('/cupones')} />
-          <NavItem icon={<Icons.Messages />} label="Mensajes" href="/admin/mensajes" active={pathname.includes('/mensajes')} />
-          <NavItem icon={<Icons.Dollar />} label="Balance" href="/admin/balance" active={pathname.includes('/balance')} />
+          <NavItem icon={<Icons.Analytics />} label="Analíticas" href="/admin" active={path === '/admin'} />
+          <NavItem icon={<Icons.Products />} label="Ventas" href="/admin/ventas" active={path.includes('/ventas')} />
+          <NavItem icon={<Icons.Storefront />} label="Productos" href="/admin/productos" active={path.includes('/productos')} />
+          <NavItem icon={<Icons.Truck />} label="Envíos" href="/admin/envios" active={path.includes('/envios')} />
+          <NavItem icon={<Icons.Customers />} label="Clientes" href="/admin/clientes" active={path.includes('/clientes')} />
+          <NavItem icon={<Icons.Ticket />} label="Cupones" href="/admin/cupones" active={path.includes('/cupones')} />
+          <NavItem icon={<Icons.Messages />} label="Mensajes" href="/admin/mensajes" active={path.includes('/mensajes')} />
+          <NavItem icon={<Icons.Dollar />} label="Balance" href="/admin/balance" active={path.includes('/balance')} />
           
           <div style={{ margin: '16px 0', height: '1px', backgroundColor: T.border }} />
           
