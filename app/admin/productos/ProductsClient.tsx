@@ -7,7 +7,7 @@ import NewProductModal from '@/app/components/NewProductModal';
 import { ToastContainer, toast } from '@/app/components/Toast';
 import { deleteProduct } from '@/app/admin/actions/delete-product';
 
-const TABLE_HEADERS = ['Producto', 'SKU', 'Categoría', 'Precio (CLP)', 'Stock', 'Estado', 'Acciones'];
+const TABLE_HEADERS = ['Producto', 'SKU', 'Categoría', 'Precio (CLP)', 'Costo (CLP)', 'Stock', 'Estado', 'Acciones'];
 
 export default function ProductsClient({ initialProducts }: { initialProducts: any[] }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -55,7 +55,12 @@ export default function ProductsClient({ initialProducts }: { initialProducts: a
         }}>
           <div>
             <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '4px', color: T.text }}>Inventario de Productos</h2>
-            <p style={{ fontSize: '0.9rem', color: T.textMuted }}>Gestiona tu catálogo y stock</p>
+            <p style={{ fontSize: '0.9rem', color: T.textMuted }}>
+              Gestiona tu catálogo y stock. Valorización total: 
+              <strong style={{ color: T.text, marginLeft: '6px' }}>
+                ${initialProducts.reduce((acc, p) => acc + ((p.cost_price || 0) * (p.stock || 0)), 0).toLocaleString('es-CL')} CLP
+              </strong>
+            </p>
           </div>
           
           <button
@@ -169,7 +174,20 @@ export default function ProductsClient({ initialProducts }: { initialProducts: a
                     ${product.sale_price?.toLocaleString('es-CL')}
                   </td>
                   <td style={{ padding: '16px 32px', color: T.textMuted, fontSize: '0.9rem' }}>
-                    {product.stock === null ? 'Ilimitado' : product.stock}
+                    ${(product.cost_price || 0).toLocaleString('es-CL')}
+                  </td>
+                  <td style={{ padding: '16px 32px', color: T.textMuted, fontSize: '0.9rem' }}>
+                    {product.stock === null ? 'Ilimitado' : (
+                      <span style={{ 
+                        color: product.stock <= 5 ? T.danger : T.text,
+                        fontWeight: product.stock <= 5 ? 700 : 400,
+                        background: product.stock <= 5 ? T.dangerBg : 'transparent',
+                        padding: product.stock <= 5 ? '4px 8px' : '0',
+                        borderRadius: '4px'
+                      }}>
+                        {product.stock} {product.stock <= 5 && '⚠️'}
+                      </span>
+                    )}
                   </td>
                   <td style={{ padding: '16px 32px', textAlign: 'right' }}>
                     <span style={{
