@@ -1,7 +1,10 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { supabase } from '@/lib/supabase/client';
+import { useCart } from './CartContext';
+import CartSidebar from './CartSidebar';
 
 // ─── DESIGN TOKENS ────────────────────────────────────────────────────────
 const S = {
@@ -29,28 +32,74 @@ function PromoBar() {
 
 // ─── NAVBAR ───────────────────────────────────────────────────────────────
 function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled]     = useState(false);
+  const [userName, setUserName]     = useState<string | null>(null);
+  const [showMenu, setShowMenu]     = useState(false);
+  const { cartCount, openCart } = useCart();
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Detectar scroll
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 60);
     window.addEventListener('scroll', fn);
     return () => window.removeEventListener('scroll', fn);
   }, []);
 
-  const navBg = scrolled ? 'rgba(253,252,248,0.97)' : 'rgba(253,252,248,0.95)';
+  // Detectar sesión activa
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        const name = session.user.user_metadata?.full_name as string | undefined;
+        setUserName(name ? name.split(' ')[0] : session.user.email?.split('@')[0] || 'Mi Cuenta');
+      }
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        const name = session.user.user_metadata?.full_name as string | undefined;
+        setUserName(name ? name.split(' ')[0] : session.user.email?.split('@')[0] || 'Mi Cuenta');
+      } else {
+        setUserName(null);
+      }
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  // Cerrar menú al clicar fuera
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setShowMenu(false);
+    window.location.href = '/';
+  };
+
+  const navBg  = scrolled ? 'rgba(253,252,248,0.97)' : 'rgba(253,252,248,0.95)';
   const linkColor = S.charcoal;
 
+  // Estilo del cuadro de botón (igual para Mi Cuenta y Colaborador)
+  const btnBox: React.CSSProperties = {
+    fontFamily:'Cinzel,serif', fontSize:'0.68rem', letterSpacing:'0.12em',
+    textTransform:'uppercase', textDecoration:'none',
+    color:S.obsidian, border:`1px solid ${S.nude}`,
+    padding:'9px 20px', cursor:'pointer', background:'transparent',
+    transition:'all 0.25s', whiteSpace:'nowrap' as const,
+  };
+
   return (
-    <nav style={{
-      position:'sticky', top:0, zIndex:100,
-      background: navBg,
-      borderBottom:`1px solid ${S.nude}`,
-      backdropFilter:'blur(20px)',
-      transition:'all 0.3s',
-    }}>
+    <nav style={{ position:'sticky', top:0, zIndex:100, background:navBg, borderBottom:`1px solid ${S.nude}`, backdropFilter:'blur(20px)', transition:'all 0.3s' }}>
       <div style={{ maxWidth:1320, margin:'0 auto', padding:'0 2rem', height:72, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <Link href="/" style={{ display:'flex', alignItems:'center', textDecoration:'none', flexShrink:0 }}>
           <Image src="/Amora_Jewelry_logo_header_480x114.png" alt="Amora Jewelry" width={200} height={48} style={{ objectFit:'contain' }} priority />
         </Link>
+
         <div style={{ display:'flex', gap:36, alignItems:'center' }}>
           {[
             { l:'Novedades', h:'#novedades' },
@@ -64,14 +113,15 @@ function Navbar() {
           ))}
           <a href="#sale" style={{ color:S.gold, textDecoration:'none', fontFamily:'Cinzel,serif', fontSize:'0.7rem', letterSpacing:'0.12em', textTransform:'uppercase' }}>Sale</a>
         </div>
-        <div style={{ display:'flex', gap:20, alignItems:'center' }}>
+
+        <div style={{ display:'flex', gap:12, alignItems:'center' }}>
+          {/* Íconos */}
           {[
-            { img:'/amora_buscar.png', title:'Buscar' },
-            { img:'/amora_favoritos.png', title:'Favoritos' },
-            { img:'/amora_carrito.png', title:'Carrito' },
+            { img:'/amora_buscar.png',   title:'Buscar' },
+            { img:'/amora_favoritos.png',title:'Favoritos' },
           ].map(a => (
-            <button key={a.title} title={a.title} style={{ width:32, height:32, background:'none', border:'none', display:'flex', alignItems:'center', justifyContent:'center', transition:'opacity 0.2s', cursor:'pointer' }}
-              onMouseEnter={e=>(e.currentTarget.style.opacity='0.7')}
+            <button key={a.title} title={a.title} style={{ width:30, height:30, background:'none', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', opacity:1, transition:'opacity 0.2s' }}
+              onMouseEnter={e=>(e.currentTarget.style.opacity='0.6')}
               onMouseLeave={e=>(e.currentTarget.style.opacity='1')}
             >
               <div style={{ position:'relative', width:'100%', height:'100%' }}>
@@ -79,14 +129,68 @@ function Navbar() {
               </div>
             </button>
           ))}
-          <Link href="/admin" style={{
-            fontFamily:'Cinzel,serif', fontSize:'0.68rem', letterSpacing:'0.12em',
-            color:S.obsidian, border:`1px solid ${S.nude}`,
-            padding:'8px 20px', textDecoration:'none', transition:'all 0.25s',
-          }}
-            onMouseEnter={e=>{ e.currentTarget.style.background=S.obsidian; e.currentTarget.style.color=S.offWhite; }}
-            onMouseLeave={e=>{ e.currentTarget.style.background='transparent'; e.currentTarget.style.color=S.obsidian; }}
-          >ADMIN</Link>
+
+          {/* Carrito con badge */}
+          <button title="Carrito" onClick={openCart} style={{ width:30, height:30, background:'none', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', position:'relative', transition:'opacity 0.2s' }}
+            onMouseEnter={e=>(e.currentTarget.style.opacity='0.6')}
+            onMouseLeave={e=>(e.currentTarget.style.opacity='1')}
+          >
+            <div style={{ position:'relative', width:'100%', height:'100%' }}>
+              <Image src="/amora_carrito.png" alt="Carrito" fill style={{ objectFit:'contain' }} />
+            </div>
+            {cartCount > 0 && (
+              <span style={{ position:'absolute', top:-4, right:-4, background:S.obsidian, color:S.offWhite, borderRadius:'50%', width:16, height:16, fontSize:'0.55rem', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Inter,sans-serif', fontWeight:700 }}>
+                {cartCount}
+              </span>
+            )}
+          </button>
+
+          {/* Separador */}
+          <span style={{ width:1, height:24, background:S.nude, display:'block' }} />
+
+          {/* Botón Mi Cuenta / Nombre del cliente */}
+          <div ref={menuRef} style={{ position:'relative' }}>
+            {userName ? (
+              <>
+                <button
+                  onClick={() => setShowMenu(v => !v)}
+                  style={{ ...btnBox, background: showMenu ? S.obsidian : 'transparent', color: showMenu ? S.offWhite : S.obsidian }}
+                  onMouseEnter={e=>{ e.currentTarget.style.background=S.obsidian; e.currentTarget.style.color=S.offWhite; }}
+                  onMouseLeave={e=>{ if(!showMenu){ e.currentTarget.style.background='transparent'; e.currentTarget.style.color=S.obsidian; } }}
+                >
+                  {userName} ▾
+                </button>
+                {showMenu && (
+                  <div style={{ position:'absolute', top:'calc(100% + 8px)', right:0, background:S.offWhite, border:`1px solid ${S.nude}`, borderRadius:8, minWidth:160, boxShadow:'0 8px 24px rgba(0,0,0,0.08)', zIndex:200, overflow:'hidden' }}>
+                    <div style={{ padding:'10px 16px', fontFamily:'Cinzel,serif', fontSize:'0.6rem', letterSpacing:'0.1em', color:S.nudeDark, borderBottom:`1px solid ${S.nude}`, textTransform:'uppercase' }}>
+                      Mi cuenta
+                    </div>
+                    <button onClick={handleLogout} style={{ width:'100%', padding:'12px 16px', background:'none', border:'none', textAlign:'left', fontFamily:'Cinzel,serif', fontSize:'0.68rem', color:S.obsidian, cursor:'pointer', letterSpacing:'0.08em', transition:'background 0.2s' }}
+                      onMouseEnter={e=>(e.currentTarget.style.background=S.ivory)}
+                      onMouseLeave={e=>(e.currentTarget.style.background='none')}
+                    >
+                      Cerrar sesión
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <Link href="/auth/cliente" style={btnBox}
+                onMouseEnter={e=>{ (e.currentTarget as HTMLElement).style.background=S.obsidian; (e.currentTarget as HTMLElement).style.color=S.offWhite; }}
+                onMouseLeave={e=>{ (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color=S.obsidian; }}
+              >
+                Mi Cuenta
+              </Link>
+            )}
+          </div>
+
+          {/* Botón Colaborador — mismo estilo de cuadro */}
+          <Link href="/auth/colaborador" style={{ ...btnBox, color:S.muted, border:`1px solid ${S.nude}` }}
+            onMouseEnter={e=>{ (e.currentTarget as HTMLElement).style.background=S.obsidian; (e.currentTarget as HTMLElement).style.color=S.offWhite; }}
+            onMouseLeave={e=>{ (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color=S.muted; }}
+          >
+            Colaborador
+          </Link>
         </div>
       </div>
     </nav>
@@ -150,10 +254,7 @@ function Hero() {
         </div>
       </div>
 
-      <div style={{ position:'absolute', bottom:40, left:'50%', transform:'translateX(-50%)', zIndex:3, display:'flex', flexDirection:'column', alignItems:'center', gap:6 }}>
-        <span style={{ color:S.nudeDark, fontSize:'0.6rem', letterSpacing:'0.2em', textTransform:'uppercase' }}>Scroll</span>
-        <div className="float" style={{ width:1, height:36, background:`linear-gradient(to bottom,${S.nudeDark},transparent)` }} />
-      </div>
+
     </section>
   );
 }
@@ -193,6 +294,7 @@ function FeaturesBar() {
 // ─── PRODUCT CARD COMPONENT ──────────────────────────────────────────────────
 function ProductCard({ p }: { p: any }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { addToCart } = useCart();
   
   // Decide which image to show based on hover state and availability
   const hasRefImage = Boolean(p.reference_image_url);
@@ -238,10 +340,10 @@ function ProductCard({ p }: { p: any }) {
           {p.title}
         </h3>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop: 'auto' }}>
-          <span className="font-display" style={{ fontSize:'1.2rem', color:S.obsidian, fontWeight:300 }}>
+          <span className="font-display" style={{ fontSize:'1.2rem', color:S.obsidian, fontWeight:300 }} suppressHydrationWarning>
             ${p.sale_price.toLocaleString('es-CL')}
           </span>
-          <button style={{
+          <button onClick={() => addToCart(p)} style={{
             fontFamily:'Cinzel,serif', fontSize:'0.58rem', letterSpacing:'0.1em', textTransform:'uppercase',
             background:'transparent', border:`1px solid ${S.nude}`, color:S.charcoal,
             padding:'8px 14px', cursor:'pointer', transition:'all 0.25s',
@@ -478,6 +580,7 @@ export default function StorefrontClient({ products }: { products: any[] }) {
         <SecondBanner />
       </main>
       <Footer />
+      <CartSidebar />
 
       {/* Floating WhatsApp Button */}
       <a href="https://wa.me/569XXXXXXXX" target="_blank" rel="noopener noreferrer" aria-label="Contáctanos por WhatsApp" style={{

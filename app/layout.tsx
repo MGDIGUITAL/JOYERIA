@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { CartProvider } from './components/CartContext';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
@@ -24,8 +26,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body style={{ background: '#080808', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
-        {children}
+      <body style={{ background: '#080808', color: '#fff', fontFamily: 'Inter, sans-serif' }} suppressHydrationWarning>
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );
