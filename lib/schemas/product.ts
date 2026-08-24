@@ -91,7 +91,7 @@ export const productSchema = z
   });
 
 // ─── Types ──────────────────────────────────────────────────────────────
-export type ProductFormData = z.infer<typeof productSchema>;
+export type ProductFormData = z.input<typeof productSchema>;
 
 /** Payload sent to the server (after image upload resolves) */
 export interface CreateProductPayload extends Omit<ProductFormData, 'isUnlimitedStock' | 'stockQuantity'> {
