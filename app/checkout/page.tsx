@@ -119,26 +119,28 @@ export default function CheckoutPage() {
       const { error: itemsError } = await supabase.from('order_items').insert(itemsToInsert);
       if (itemsError) throw itemsError;
 
-      // Enviar correo de confirmación
+      // ─── INTEGRACIÓN FLOW ──────────────────────────────────────────
       try {
-        await fetch('/api/emails/order-confirmation', {
+        const flowRes = await fetch('/api/checkout/create-flow-payment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            email: clientEmail,
             orderId: orderData.id,
-            name: `${clientName} ${clientLastname}`.trim(),
-            total: finalTotal,
-            method: deliveryMethod,
-            address: deliveryMethod === 'domicilio' ? clientAddress : selectedPickupPoint
-          }),
+            amount: finalTotal,
+            email: clientEmail
+          })
         });
-      } catch (err) {
-        console.error('Error enviando correo de confirmación', err);
-      }
 
-      alert('¡Orden registrada con éxito! Revisa tu correo electrónico.');
-      
+        const flowData = await flowRes.json();
+        if (!flowRes.ok) throw new Error(flowData.error || 'Error creando pago');
+
+        // Redirigir al cliente a Flow
+        window.location.href = flowData.redirectUrl;
+      } catch (err: any) {
+        console.error('Error con Flow:', err);
+        alert(`La orden se creó pero falló la conexión con Webpay: ${err.message}`);
+        setIsSubmitting(false);
+      }
     } catch (e: any) {
       console.error(e);
       alert('Hubo un error guardando la orden: ' + e.message);
