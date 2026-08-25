@@ -400,39 +400,74 @@ export default function AdminEnvios() {
               </div>
 
               {/* Total Summary Box */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
-                <div style={{ width: '240px', background: '#FDFCF8', border: '1px solid #E3DBCC', padding: '10px 14px', borderRadius: '6px', fontSize: '11px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '4px' }}>
-                    <span>Subtotal Productos:</span>
-                    <span>${((order.total || 0) - (order.shipping_cost || 0)).toLocaleString('es-CL')}</span>
+              {(() => {
+                const itemsSubtotal = order.order_items?.reduce((sum: number, item: any) => sum + ((item.price || 0) * (item.quantity || 1)), 0) || 0;
+                const shippingCost = order.shipping_cost || 0;
+                const grandTotal = itemsSubtotal + shippingCost;
+
+                return (
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+                    <div style={{ width: '250px', background: '#FDFCF8', border: '1px solid #E3DBCC', padding: '10px 14px', borderRadius: '6px', fontSize: '11px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '4px' }}>
+                        <span>Subtotal Productos:</span>
+                        <span>${itemsSubtotal.toLocaleString('es-CL')}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '4px' }}>
+                        <span>Envío Courier:</span>
+                        <span>${shippingCost.toLocaleString('es-CL')}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '4px', borderTop: '1px solid #101010', fontWeight: 'bold', fontSize: '13px', color: '#101010' }}>
+                        <span>TOTAL GENERAL:</span>
+                        <span>${grandTotal.toLocaleString('es-CL')} CLP</span>
+                      </div>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '4px' }}>
-                    <span>Envío Courier:</span>
-                    <span>${(order.shipping_cost || 0).toLocaleString('es-CL')}</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '4px', borderTop: '1px solid #101010', fontWeight: 'bold', fontSize: '13px', color: '#101010' }}>
-                    <span>TOTAL GENERAL:</span>
-                    <span>${(order.total || 0).toLocaleString('es-CL')} CLP</span>
-                  </div>
-                </div>
-              </div>
+                );
+              })()}
             </div>
 
-            {/* Signature / Receiving Acknowledgment Section (Tight Footer) */}
-            <div style={{ borderTop: '1px dashed #bbb', paddingTop: '14px', marginTop: 'auto' }}>
-              <div style={{ fontSize: '10px', fontWeight: 'bold', color: '#444', textTransform: 'uppercase', marginBottom: '12px', textAlign: 'center', letterSpacing: '0.5px' }}>
-                ACREDITACIÓN DE RECEPCIÓN Y CONFORMIDAD DEL CLIENTE
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', fontSize: '10px' }}>
-                <div style={{ borderBottom: '1px solid #000', paddingBottom: '24px' }}>
-                  <strong>Nombre del Receptor:</strong>
+            {/* Signature / Receiving Acknowledgment Section & Official Logistics Stamp */}
+            <div style={{ borderTop: '1px dashed #bbb', paddingTop: '12px', marginTop: 'auto' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px', alignItems: 'center' }}>
+                
+                {/* Client Receiving Area */}
+                <div>
+                  <div style={{ fontSize: '9px', fontWeight: 'bold', color: '#444', textTransform: 'uppercase', marginBottom: '10px', letterSpacing: '0.5px' }}>
+                    ACREDITACIÓN DE RECEPCIÓN Y CONFORMIDAD DEL CLIENTE
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', fontSize: '10px' }}>
+                    <div style={{ borderBottom: '1px solid #000', paddingBottom: '20px' }}>
+                      <strong>Nombre Receptor:</strong>
+                    </div>
+                    <div style={{ borderBottom: '1px solid #000', paddingBottom: '20px' }}>
+                      <strong>RUT Receptor:</strong>
+                    </div>
+                    <div style={{ borderBottom: '1px solid #000', paddingBottom: '20px' }}>
+                      <strong>Firma / Fecha:</strong>
+                    </div>
+                  </div>
                 </div>
-                <div style={{ borderBottom: '1px solid #000', paddingBottom: '24px' }}>
-                  <strong>RUT del Receptor:</strong>
+
+                {/* Logistics Manager Official Stamp / Seal */}
+                <div style={{ borderLeft: '1px solid #ddd', paddingLeft: '16px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '9px', fontWeight: 'bold', color: '#B8975A', textTransform: 'uppercase', marginBottom: '4px', letterSpacing: '0.5px' }}>
+                    ENCARGADO DE LOGÍSTICA
+                  </div>
+                  <div style={{ position: 'relative', display: 'inline-block', padding: '6px 12px', border: '1.5px dashed #101010', borderRadius: '8px', background: '#FDFCF8' }}>
+                    <img 
+                      src="/Amora_Jewelry_logo_mark.png" 
+                      alt="Amora Jewelry Mark" 
+                      style={{ width: '28px', height: 'auto', display: 'block', margin: '0 auto 2px auto', opacity: 0.85 }} 
+                    />
+                    <div style={{ fontSize: '9px', fontWeight: 'bold', color: '#101010', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      AMORA JEWELRY
+                    </div>
+                    <div style={{ fontSize: '8px', color: '#2E7D32', fontWeight: 'bold', marginTop: '2px' }}>
+                      ✓ REVISADO & APROBADO
+                    </div>
+                  </div>
                 </div>
-                <div style={{ borderBottom: '1px solid #000', paddingBottom: '24px' }}>
-                  <strong>Firma / Fecha:</strong>
-                </div>
+
               </div>
             </div>
 
