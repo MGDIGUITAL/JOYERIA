@@ -57,15 +57,22 @@ export default function AdminEnvios() {
   };
 
   const markAsShipped = async (order: any) => {
+    const trackingNum = prompt('Introduce el número de seguimiento de Blue Express (opcional):', '');
+    if (trackingNum === null) return; // Cancelled
+
     try {
       const res = await fetch('/api/admin/orders/update-status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId: order.id, status: 'Enviado' }),
+        body: JSON.stringify({ 
+          orderId: order.id, 
+          status: 'Enviado', 
+          trackingNumber: trackingNum 
+        }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        setOrders(orders.map(o => o.id === order.id ? { ...o, status: 'Enviado' } : o));
+        setOrders(orders.map(o => o.id === order.id ? { ...o, status: 'Enviado', tracking_number: trackingNum } : o));
         
         try {
           await fetch('/api/emails/order-shipped', {
@@ -76,13 +83,14 @@ export default function AdminEnvios() {
               orderId: order.id,
               name: order.client_name,
               method: order.delivery_method,
-              address: order.delivery_method === 'domicilio' ? order.shipping_address : order.pickup_point_name
+              address: order.delivery_method === 'domicilio' ? order.shipping_address : order.pickup_point_name,
+              trackingNumber: trackingNum
             }),
           });
         } catch (err) {
           console.error('Error enviando correo de despacho', err);
         }
-        alert('Orden marcada como Enviada exitosamente.');
+        alert('Orden marcada como Enviada exitosamente. Se ha notificado al cliente.');
       } else {
         alert('Error actualizando estado: ' + (data.error || 'Error desconocido'));
       }

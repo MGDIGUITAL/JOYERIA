@@ -5,15 +5,20 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
-    const { orderId, status } = await req.json();
+    const { orderId, status, trackingNumber } = await req.json();
 
     if (!orderId || !status) {
       return NextResponse.json({ error: 'orderId y status son requeridos' }, { status: 400 });
     }
 
+    const updatePayload: any = { status };
+    if (trackingNumber !== undefined) {
+      updatePayload.tracking_number = trackingNumber;
+    }
+
     const { data, error } = await supabaseAdmin
       .from('orders')
-      .update({ status })
+      .update(updatePayload)
       .eq('id', orderId)
       .select();
 
