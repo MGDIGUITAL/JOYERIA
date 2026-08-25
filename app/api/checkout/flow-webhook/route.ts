@@ -236,7 +236,7 @@ function buildBoletaHtml(order: any, items: any[]) {
                   </td>
                   <td style="color:#7A7468;font-size:11px;">|</td>
                   <td style="padding:0 12px;">
-                    <a href="https://instagram.com/amorajwlry" style="font-size:11px;color:#C8BBA8;text-decoration:none;letter-spacing:1px;">@amorajwlry</a>
+                    <a href="https://www.instagram.com/amorajewelrychile/" style="font-size:11px;color:#C8BBA8;text-decoration:none;letter-spacing:1px;">@amorajewelrychile</a>
                   </td>
                   <td style="color:#7A7468;font-size:11px;">|</td>
                   <td style="padding:0 12px;">

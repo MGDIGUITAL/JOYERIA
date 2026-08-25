@@ -498,11 +498,11 @@ function Footer() {
             </p>
             <div style={{ display:'flex', gap:10 }}>
               {[
-                { img: '/amora_instagram.png', href: '#', title: 'Instagram' },
-                { img: '/amora_whatsapp.png', href: '#', title: 'WhatsApp' },
-                { img: '/amora_email.png', href: '#', title: 'Email' },
+                { img: '/amora_instagram.png', href: 'https://www.instagram.com/amorajewelrychile/', title: 'Instagram' },
+                { img: '/amora_whatsapp.png', href: 'https://wa.me/569XXXXXXXX', title: 'WhatsApp' },
+                { img: '/amora_email.png', href: 'mailto:amorajewelrychile@gmail.com', title: 'Email' },
               ].map(s => (
-                <a key={s.title} href={s.href} title={s.title} style={{ width:36, height:36, border:`1px solid ${S.nude}`, display:'flex', alignItems:'center', justifyContent:'center', transition:'all 0.25s', padding: 8 }}
+                <a key={s.title} href={s.href} title={s.title} target={s.href.startsWith('http') ? '_blank' : undefined} rel={s.href.startsWith('http') ? 'noopener noreferrer' : undefined} style={{ width:36, height:36, border:`1px solid ${S.nude}`, display:'flex', alignItems:'center', justifyContent:'center', transition:'all 0.25s', padding: 8 }}
                   onMouseEnter={e=>{ e.currentTarget.style.background=S.nude; }}
                   onMouseLeave={e=>{ e.currentTarget.style.background='transparent'; }}
                 >

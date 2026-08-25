@@ -237,7 +237,7 @@ function StatusContent() {
               />
               <p style={{ color: S.muted, fontSize: '0.72rem', marginTop: 10, lineHeight: 1.6 }}>
                 amorajewelrychile@gmail.com<br/>
-                @amorajwlry &nbsp;·&nbsp; amorajewelry.cl
+                <a href="https://www.instagram.com/amorajewelrychile/" target="_blank" rel="noopener noreferrer" style={{ color: S.muted, textDecoration: 'none' }}>@amorajewelrychile</a> &nbsp;·&nbsp; <a href="https://amorajewelry.cl" style={{ color: S.muted, textDecoration: 'none' }}>amorajewelry.cl</a>
               </p>
             </div>
             <div style={{ textAlign: 'right' }}>
