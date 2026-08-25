@@ -19,7 +19,7 @@ export default function AdminEnvios() {
   const [orders, setOrders] = useState<any[]>([]);
   const [filter, setFilter] = useState<'Pendiente' | 'Pagado' | 'Enviado'>('Pagado');
   const [loading, setLoading] = useState(true);
-  const [printOrders, setPrintOrders] = useState<any[] | null>(null); // Orders being printed
+  const [printOrders, setPrintOrders] = useState<any[] | null>(null);
 
   useEffect(() => {
     fetchOrders();
@@ -94,9 +94,20 @@ export default function AdminEnvios() {
   return (
     <div style={{ minHeight: '100vh', background: S.ivory, fontFamily: 'Inter, sans-serif' }}>
       
-      {/* ── CSS PRINT MEDIA STYLES ────────────────────────────────────────── */}
+      {/* ── CSS PRINT MEDIA STYLES (EXACT A4 PAGE FIT) ────────────────────── */}
       <style>{`
+        @page {
+          size: A4 portrait;
+          margin: 0;
+        }
         @media print {
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
           body * {
             visibility: hidden;
           }
@@ -111,14 +122,18 @@ export default function AdminEnvios() {
           }
           .a4-page {
             width: 210mm;
-            min-height: 297mm;
-            padding: 20mm;
+            height: 295mm;
+            padding: 12mm 15mm;
             margin: 0 auto;
             background: #ffffff !important;
             color: #000000 !important;
             box-sizing: border-box;
             page-break-after: always;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            page-break-inside: avoid;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
           }
           .no-print {
             display: none !important;
@@ -134,7 +149,6 @@ export default function AdminEnvios() {
           <h1 style={{ margin: 0, fontFamily: 'Cinzel, serif', fontSize: '1.2rem', color: S.gold }}>Módulo de Resumen de Envíos</h1>
         </div>
 
-        {/* Botón Principal de Generación de Notas de Despacho */}
         <button 
           onClick={() => handlePrintAll(pendingDispatches)}
           disabled={pendingDispatches.length === 0}
@@ -257,8 +271,13 @@ export default function AdminEnvios() {
                     <h3 style={{ fontSize: '0.9rem', color: S.muted, textTransform: 'uppercase', marginBottom: 12 }}>Contenido del Paquete</h3>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                       {order.order_items?.map((item: any) => (
-                        <li key={item.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: `1px solid ${S.nude}` }}>
-                          <span style={{ fontSize: '0.9rem' }}>{item.quantity}x {item.product_title}</span>
+                        <li key={item.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: `1px solid ${S.nude}`, alignItems: 'center' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            {item.image_url && (
+                              <img src={item.image_url} alt={item.product_title} style={{ width: 36, height: 36, objectFit: 'cover', borderRadius: 4 }} />
+                            )}
+                            <span style={{ fontSize: '0.9rem' }}>{item.quantity}x {item.product_title}</span>
+                          </div>
                           <span style={{ fontSize: '0.85rem', color: S.muted }}>${(item.price * item.quantity).toLocaleString('es-CL')}</span>
                         </li>
                       ))}
@@ -271,150 +290,149 @@ export default function AdminEnvios() {
         )}
       </main>
 
-      {/* ── PRINT AREA (A4 DISPATCH NOTES TEMPLATE) ───────────────────────── */}
+      {/* ── PRINT AREA (PERFECT A4 SINGLE-PAGE FIT) ───────────────────────── */}
       <div id="print-area">
         {printOrders && printOrders.map((order) => (
-          <div key={order.id} className="a4-page" style={{ position: 'relative', border: '1px solid #ddd', background: '#fff' }}>
-            {/* Document Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #101010', paddingBottom: '16px', marginBottom: '24px' }}>
-              <div>
-                <img 
-                  src="https://qrhspijmfimjxemravyz.supabase.co/storage/v1/object/public/email-assets/Amora_Jewelry_logo_header_480x114.png" 
-                  alt="Amora Jewelry" 
-                  style={{ height: '42px', width: 'auto', display: 'block', marginBottom: '4px' }} 
-                />
-                <p style={{ margin: 0, fontSize: '10px', color: '#666', textTransform: 'uppercase', letterSpacing: '1px' }}>Alta Joyería en Chile • www.amorajewelry.cl</p>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ background: '#101010', color: '#B8975A', padding: '6px 16px', fontWeight: 'bold', fontSize: '14px', borderRadius: '4px', display: 'inline-block' }}>
-                  NOTA DE DESPACHO
+          <div key={order.id} className="a4-page">
+            <div>
+              {/* Document Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #101010', paddingBottom: '12px', marginBottom: '16px' }}>
+                <div>
+                  <img 
+                    src="/Amora_Jewelry_logo_header_480x114.png" 
+                    alt="Amora Jewelry" 
+                    style={{ height: '38px', width: 'auto', display: 'block', marginBottom: '2px' }} 
+                  />
+                  <p style={{ margin: 0, fontSize: '9px', color: '#666', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Alta Joyería en Chile • www.amorajewelry.cl</p>
                 </div>
-                <div style={{ fontSize: '12px', marginTop: '6px', fontWeight: 'bold', color: '#333' }}>
-                  N° {String(order.id).substring(0, 8).toUpperCase()}
-                </div>
-                <div style={{ fontSize: '11px', color: '#666' }}>
-                  Fecha: {new Date(order.created_at).toLocaleDateString('es-CL')}
-                </div>
-              </div>
-            </div>
-
-            {/* Info Grid (2 columns) */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
-              
-              {/* Customer Box */}
-              <div style={{ border: '1px solid #E3DBCC', padding: '16px', borderRadius: '6px', background: '#FDFCF8' }}>
-                <h3 style={{ margin: '0 0 10px 0', fontSize: '11px', textTransform: 'uppercase', color: '#B8975A', borderBottom: '1px solid #E3DBCC', paddingBottom: '4px', letterSpacing: '1px' }}>
-                  DATOS DEL CLIENTE / DESTINATARIO
-                </h3>
-                <div style={{ fontSize: '12px', lineHeight: '1.6', color: '#222' }}>
-                  <div><strong>Nombre:</strong> {order.client_name}</div>
-                  <div><strong>RUT:</strong> {order.client_rut}</div>
-                  <div><strong>Email:</strong> {order.client_email}</div>
-                  <div><strong>Teléfono:</strong> {order.client_phone || 'No registrado'}</div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ background: '#101010', color: '#B8975A', padding: '5px 14px', fontWeight: 'bold', fontSize: '13px', borderRadius: '4px', display: 'inline-block' }}>
+                    NOTA DE DESPACHO
+                  </div>
+                  <div style={{ fontSize: '11px', marginTop: '4px', fontWeight: 'bold', color: '#333' }}>
+                    N° {String(order.id).substring(0, 8).toUpperCase()}
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#666' }}>
+                    Fecha: {new Date(order.created_at).toLocaleDateString('es-CL')}
+                  </div>
                 </div>
               </div>
 
-              {/* Delivery Box */}
-              <div style={{ border: '1px solid #E3DBCC', padding: '16px', borderRadius: '6px', background: '#FDFCF8' }}>
-                <h3 style={{ margin: '0 0 10px 0', fontSize: '11px', textTransform: 'uppercase', color: '#B8975A', borderBottom: '1px solid #E3DBCC', paddingBottom: '4px', letterSpacing: '1px' }}>
-                  DATOS DE ENVÍO Y DESTINO
+              {/* Info Grid (2 columns) */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
+                
+                {/* Customer Box */}
+                <div style={{ border: '1px solid #E3DBCC', padding: '12px', borderRadius: '6px', background: '#FDFCF8' }}>
+                  <h3 style={{ margin: '0 0 6px 0', fontSize: '10px', textTransform: 'uppercase', color: '#B8975A', borderBottom: '1px solid #E3DBCC', paddingBottom: '3px', letterSpacing: '0.5px' }}>
+                    DATOS DEL CLIENTE / DESTINATARIO
+                  </h3>
+                  <div style={{ fontSize: '11px', lineHeight: '1.5', color: '#222' }}>
+                    <div><strong>Nombre:</strong> {order.client_name}</div>
+                    <div><strong>RUT:</strong> {order.client_rut}</div>
+                    <div><strong>Email:</strong> {order.client_email}</div>
+                    <div><strong>Teléfono:</strong> {order.client_phone || 'No registrado'}</div>
+                  </div>
+                </div>
+
+                {/* Delivery Box */}
+                <div style={{ border: '1px solid #E3DBCC', padding: '12px', borderRadius: '6px', background: '#FDFCF8' }}>
+                  <h3 style={{ margin: '0 0 6px 0', fontSize: '10px', textTransform: 'uppercase', color: '#B8975A', borderBottom: '1px solid #E3DBCC', paddingBottom: '3px', letterSpacing: '0.5px' }}>
+                    DATOS DE ENVÍO Y DESTINO
+                  </h3>
+                  <div style={{ fontSize: '11px', lineHeight: '1.5', color: '#222' }}>
+                    <div><strong>Courier / Método:</strong> {order.delivery_method === 'domicilio' ? 'Blue Express (Domicilio)' : 'Punto Blue Express'}</div>
+                    <div><strong>Región:</strong> {order.shipping_region}</div>
+                    <div><strong>Comuna:</strong> {order.shipping_comuna}</div>
+                    <div>
+                      <strong>Dirección / Entrega:</strong>{' '}
+                      {order.delivery_method === 'domicilio' ? order.shipping_address : `${order.pickup_point_name} (${order.pickup_point_address})`}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Product Table */}
+              <div style={{ marginBottom: '20px' }}>
+                <h3 style={{ margin: '0 0 8px 0', fontSize: '11px', textTransform: 'uppercase', color: '#101010', letterSpacing: '0.5px' }}>
+                  DETALLE DE PRODUCTOS A ENTREGAR (FOTO REFERENCIAL)
                 </h3>
-                <div style={{ fontSize: '12px', lineHeight: '1.6', color: '#222' }}>
-                  <div><strong>Courier / Método:</strong> {order.delivery_method === 'domicilio' ? 'Blue Express (Domicilio)' : 'Punto Blue Express'}</div>
-                  <div><strong>Región:</strong> {order.shipping_region}</div>
-                  <div><strong>Comuna:</strong> {order.shipping_comuna}</div>
-                  <div>
-                    <strong>Dirección / Entrega:</strong>{' '}
-                    {order.delivery_method === 'domicilio' ? order.shipping_address : `${order.pickup_point_name} (${order.pickup_point_address})`}
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
+                  <thead>
+                    <tr style={{ background: '#101010', color: '#fff', textAlign: 'left' }}>
+                      <th style={{ padding: '8px 10px', width: '40px' }}>Cant.</th>
+                      <th style={{ padding: '8px 10px' }}>Producto / Foto Referencial</th>
+                      <th style={{ padding: '8px 10px', width: '90px', textAlign: 'right' }}>Precio Unit.</th>
+                      <th style={{ padding: '8px 10px', width: '90px', textAlign: 'right' }}>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {order.order_items?.map((item: any, idx: number) => {
+                      const imgUrl = item.image_url || item.products?.image_url || item.products?.reference_image_url || null;
+                      return (
+                        <tr key={item.id || idx} style={{ borderBottom: '1px solid #eee' }}>
+                          <td style={{ padding: '8px 10px', fontWeight: 'bold', fontSize: '13px' }}>{item.quantity}</td>
+                          <td style={{ padding: '8px 10px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              {imgUrl ? (
+                                <img 
+                                  src={imgUrl} 
+                                  alt={item.product_title} 
+                                  style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #ddd', background: '#fff' }} 
+                                />
+                              ) : (
+                                <div style={{ width: '40px', height: '40px', background: '#f5f5f5', borderRadius: '4px', border: '1px dashed #ccc', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>💎</div>
+                              )}
+                              <div>
+                                <div style={{ fontWeight: 'bold', fontSize: '12px', color: '#101010' }}>{item.product_title}</div>
+                                {item.size && <div style={{ fontSize: '10px', color: '#666' }}>Talla: {item.size}</div>}
+                              </div>
+                            </div>
+                          </td>
+                          <td style={{ padding: '8px 10px', textAlign: 'right' }}>${(item.price || 0).toLocaleString('es-CL')}</td>
+                          <td style={{ padding: '8px 10px', textAlign: 'right', fontWeight: 'bold' }}>
+                            ${((item.price || 0) * item.quantity).toLocaleString('es-CL')}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Total Summary Box */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+                <div style={{ width: '240px', background: '#FDFCF8', border: '1px solid #E3DBCC', padding: '10px 14px', borderRadius: '6px', fontSize: '11px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '4px' }}>
+                    <span>Subtotal Productos:</span>
+                    <span>${((order.total || 0) - (order.shipping_cost || 0)).toLocaleString('es-CL')}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '4px' }}>
+                    <span>Envío Courier:</span>
+                    <span>${(order.shipping_cost || 0).toLocaleString('es-CL')}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '4px', borderTop: '1px solid #101010', fontWeight: 'bold', fontSize: '13px', color: '#101010' }}>
+                    <span>TOTAL GENERAL:</span>
+                    <span>${(order.total || 0).toLocaleString('es-CL')} CLP</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Product Table */}
-            <div style={{ marginBottom: '30px' }}>
-              <h3 style={{ margin: '0 0 10px 0', fontSize: '12px', textTransform: 'uppercase', color: '#101010', letterSpacing: '1px' }}>
-                DETALLE DE PRODUCTOS A ENTREGAR (CON FOTO REFERENCIAL)
-              </h3>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
-                <thead>
-                  <tr style={{ background: '#101010', color: '#fff', textAlign: 'left' }}>
-                    <th style={{ padding: '10px 12px', width: '50px' }}>Cant.</th>
-                    <th style={{ padding: '10px 12px' }}>Producto / Foto Referencial</th>
-                    <th style={{ padding: '10px 12px', width: '100px', textAlign: 'right' }}>Precio Unit.</th>
-                    <th style={{ padding: '10px 12px', width: '100px', textAlign: 'right' }}>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {order.order_items?.map((item: any, idx: number) => {
-                    const imgUrl = item.products?.image_url || item.products?.reference_image_url || null;
-                    return (
-                      <tr key={item.id || idx} style={{ borderBottom: '1px solid #eee' }}>
-                        <td style={{ padding: '10px 12px', fontWeight: 'bold', fontSize: '14px' }}>{item.quantity}</td>
-                        <td style={{ padding: '10px 12px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            {imgUrl ? (
-                              <img 
-                                src={imgUrl} 
-                                alt={item.product_title} 
-                                style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #ddd' }} 
-                              />
-                            ) : (
-                              <div style={{ width: '48px', height: '48px', background: '#f0f0f0', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>💎</div>
-                            )}
-                            <div>
-                              <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#101010' }}>{item.product_title}</div>
-                              {item.size && <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>Talla: {item.size}</div>}
-                            </div>
-                          </div>
-                        </td>
-                        <td style={{ padding: '10px 12px', textAlign: 'right' }}>${(item.price || 0).toLocaleString('es-CL')}</td>
-                        <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 'bold' }}>
-                          ${((item.price || 0) * item.quantity).toLocaleString('es-CL')}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Total Summary Box */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '40px' }}>
-              <div style={{ width: '250px', background: '#FDFCF8', border: '1px solid #E3DBCC', padding: '12px', borderRadius: '6px', fontSize: '12px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '6px' }}>
-                  <span>Subtotal Productos:</span>
-                  <span>${((order.total || 0) - (order.shipping_cost || 0)).toLocaleString('es-CL')}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '6px' }}>
-                  <span>Envío Courier:</span>
-                  <span>${(order.shipping_cost || 0).toLocaleString('es-CL')}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '6px', borderTop: '1px solid #101010', fontWeight: 'bold', fontSize: '14px', color: '#101010' }}>
-                  <span>TOTAL GENERAL:</span>
-                  <span>${(order.total || 0).toLocaleString('es-CL')} CLP</span>
-                </div>
+            {/* Signature / Receiving Acknowledgment Section (Tight Footer) */}
+            <div style={{ borderTop: '1px dashed #bbb', paddingTop: '14px', marginTop: 'auto' }}>
+              <div style={{ fontSize: '10px', fontWeight: 'bold', color: '#444', textTransform: 'uppercase', marginBottom: '12px', textAlign: 'center', letterSpacing: '0.5px' }}>
+                ACREDITACIÓN DE RECEPCIÓN Y CONFORMIDAD DEL CLIENTE
               </div>
-            </div>
-
-            {/* Signature / Receiving Acknowledgment Section */}
-            <div style={{ position: 'absolute', bottom: '20mm', left: '20mm', right: '20mm', borderTop: '2px dashed #ccc', paddingTop: '20px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#555', textTransform: 'uppercase', marginBottom: '15px', textAlign: 'center' }}>
-                ACREEDITACIÓN DE RECEPCIÓN Y CONFORMIDAD DEL CLIENTE
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', fontSize: '11px' }}>
-                <div style={{ borderBottom: '1px solid #000', paddingBottom: '40px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', fontSize: '10px' }}>
+                <div style={{ borderBottom: '1px solid #000', paddingBottom: '24px' }}>
                   <strong>Nombre del Receptor:</strong>
                 </div>
-                <div style={{ borderBottom: '1px solid #000', paddingBottom: '40px' }}>
+                <div style={{ borderBottom: '1px solid #000', paddingBottom: '24px' }}>
                   <strong>RUT del Receptor:</strong>
                 </div>
-                <div style={{ borderBottom: '1px solid #000', paddingBottom: '40px' }}>
+                <div style={{ borderBottom: '1px solid #000', paddingBottom: '24px' }}>
                   <strong>Firma / Fecha:</strong>
                 </div>
-              </div>
-              <div style={{ textAlign: 'center', fontSize: '10px', color: '#999', marginTop: '20px' }}>
-                Documento generado automáticamente por Amora Jewelry ERP • {new Date().toLocaleString('es-CL')}
               </div>
             </div>
 
