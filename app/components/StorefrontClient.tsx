@@ -198,7 +198,7 @@ function Navbar() {
 }
 
 // ─── HERO ─────────────────────────────────────────────────────────────────
-const FONDOS_DESKTOP = ['/Fondo 1.png', '/Fondo 2.png', '/Fondo 3.png', '/Fondo 4.png', '/fondo 5.png'];
+const FONDOS_DESKTOP = ['/Fondo 1.jpeg', '/Fondo 2.png', '/Fondo 3.png', '/Fondo 4.png', '/fondo 5.png'];
 const FONDOS_MOBILE = ['/fondo 1 Movil.png', '/Fondo 2 Movil.png', '/Fondo 3 Movil.png', '/Fondo 4 Movil.png', '/Fondo 5 Movil.png'];
 
 function Hero() {
