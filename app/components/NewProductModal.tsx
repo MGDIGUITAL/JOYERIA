@@ -479,7 +479,7 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
               </div>
               
               {/* ── Tallas (Condicional) ── */}
-              {category === 'Anillos' && (
+              {['Anillos', 'Pulseras', 'Collares', 'Cadenas', 'Sets', 'Conjuntos', 'Aros'].includes(category) && (
                 <div>
                   <div style={{ fontFamily: 'Cinzel, serif', color: C.gold, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>
                     Tallas Disponibles
@@ -493,8 +493,8 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
                       name="sizes"
                       render={({ field }) => (
                         <>
-                          {['5', '6', '7', '8', '9', '10', '11', '12'].map(size => (
-                            <label key={size} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', background: field.value?.includes(size) ? 'rgba(212,175,55,0.15)' : 'transparent', border: `1px solid ${field.value?.includes(size) ? C.gold : C.border}`, padding: '4px 12px', borderRadius: 20, transition: 'all 0.2s' }}>
+                          {['Talla Única', '5', '6', '7', '8', '9', '10', '11', '12'].map(size => (
+                            <label key={size} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', background: field.value?.includes(size) ? 'rgba(212,175,55,0.15)' : 'transparent', border: `1px solid ${field.value?.includes(size) ? C.gold : C.border}`, padding: '6px 14px', borderRadius: 20, transition: 'all 0.2s' }}>
                               <input
                                 type="checkbox"
                                 style={{ display: 'none' }}
@@ -505,7 +505,9 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
                                   else field.onChange(current.filter((s: string) => s !== size));
                                 }}
                               />
-                              <span style={{ fontSize: '0.8rem', color: field.value?.includes(size) ? C.gold : C.textDim, fontWeight: field.value?.includes(size) ? 600 : 400 }}>Talla {size}</span>
+                              <span style={{ fontSize: '0.8rem', color: field.value?.includes(size) ? C.gold : C.textDim, fontWeight: field.value?.includes(size) ? 600 : 400 }}>
+                                {size === 'Talla Única' ? '✨ Talla Única' : `Talla ${size}`}
+                              </span>
                             </label>
                           ))}
                         </>
