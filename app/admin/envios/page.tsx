@@ -27,15 +27,14 @@ export default function AdminEnvios() {
 
   const fetchOrders = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*, order_items(*)')
-      .order('created_at', { ascending: false });
-      
-    if (error) {
-      console.error(error);
-    } else {
-      setOrders(data || []);
+    try {
+      const res = await fetch('/api/admin/orders');
+      const data = await res.json();
+      if (data.orders) {
+        setOrders(data.orders);
+      }
+    } catch (err) {
+      console.error('Error fetching orders:', err);
     }
     setLoading(false);
   };
