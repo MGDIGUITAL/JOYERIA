@@ -217,8 +217,9 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
       } else {
         toast({ type: 'error', message: result.message });
       }
-    } catch {
-      toast({ type: 'error', message: 'Error de conexión. Intenta de nuevo.' });
+    } catch (err: any) {
+      console.error('Error submitting product:', err);
+      toast({ type: 'error', message: err?.message || 'Error de conexión. Intenta de nuevo.' });
     } finally {
       setIsSubmitting(false);
     }

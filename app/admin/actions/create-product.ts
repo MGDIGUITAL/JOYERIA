@@ -18,12 +18,15 @@ async function uploadProductImage(file: File): Promise<string> {
   const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const filePath = `products/${fileName}`;
 
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
   const { error: uploadError } = await supabaseAdmin.storage
     .from(bucket)
-    .upload(filePath, file, {
+    .upload(filePath, buffer, {
       cacheControl: '3600',
       upsert: false,
-      contentType: file.type,
+      contentType: file.type || 'image/png',
     });
 
   if (uploadError) {
