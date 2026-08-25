@@ -276,10 +276,14 @@ export default function AdminEnvios() {
         {printOrders && printOrders.map((order) => (
           <div key={order.id} className="a4-page" style={{ position: 'relative', border: '1px solid #ddd', background: '#fff' }}>
             {/* Document Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #101010', paddingBottom: '20px', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #101010', paddingBottom: '16px', marginBottom: '24px' }}>
               <div>
-                <h1 style={{ margin: 0, fontSize: '24px', fontFamily: 'Cinzel, Georgia, serif', letterSpacing: '2px', color: '#101010', textTransform: 'uppercase' }}>AMORA JEWELRY</h1>
-                <p style={{ margin: '4px 0 0 0', fontSize: '11px', color: '#666', textTransform: 'uppercase', letterSpacing: '1px' }}>Alta Joyería en Chile • www.amorajewelry.cl</p>
+                <img 
+                  src="https://qrhspijmfimjxemravyz.supabase.co/storage/v1/object/public/email-assets/Amora_Jewelry_logo_header_480x114.png" 
+                  alt="Amora Jewelry" 
+                  style={{ height: '42px', width: 'auto', display: 'block', marginBottom: '4px' }} 
+                />
+                <p style={{ margin: 0, fontSize: '10px', color: '#666', textTransform: 'uppercase', letterSpacing: '1px' }}>Alta Joyería en Chile • www.amorajewelry.cl</p>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ background: '#101010', color: '#B8975A', padding: '6px 16px', fontWeight: 'bold', fontSize: '14px', borderRadius: '4px', display: 'inline-block' }}>
@@ -330,31 +334,47 @@ export default function AdminEnvios() {
             {/* Product Table */}
             <div style={{ marginBottom: '30px' }}>
               <h3 style={{ margin: '0 0 10px 0', fontSize: '12px', textTransform: 'uppercase', color: '#101010', letterSpacing: '1px' }}>
-                DETALLE DE PRODUCTOS A ENTREGAR
+                DETALLE DE PRODUCTOS A ENTREGAR (CON FOTO REFERENCIAL)
               </h3>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
                 <thead>
                   <tr style={{ background: '#101010', color: '#fff', textAlign: 'left' }}>
                     <th style={{ padding: '10px 12px', width: '50px' }}>Cant.</th>
-                    <th style={{ padding: '10px 12px' }}>Producto / Descripción</th>
+                    <th style={{ padding: '10px 12px' }}>Producto / Foto Referencial</th>
                     <th style={{ padding: '10px 12px', width: '100px', textAlign: 'right' }}>Precio Unit.</th>
                     <th style={{ padding: '10px 12px', width: '100px', textAlign: 'right' }}>Total</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {order.order_items?.map((item: any, idx: number) => (
-                    <tr key={item.id || idx} style={{ borderBottom: '1px solid #eee' }}>
-                      <td style={{ padding: '10px 12px', fontWeight: 'bold' }}>{item.quantity}</td>
-                      <td style={{ padding: '10px 12px' }}>
-                        <div style={{ fontWeight: 'bold' }}>{item.product_title}</div>
-                        {item.size && <div style={{ fontSize: '11px', color: '#666' }}>Talla: {item.size}</div>}
-                      </td>
-                      <td style={{ padding: '10px 12px', textAlign: 'right' }}>${(item.price || 0).toLocaleString('es-CL')}</td>
-                      <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 'bold' }}>
-                        ${((item.price || 0) * item.quantity).toLocaleString('es-CL')}
-                      </td>
-                    </tr>
-                  ))}
+                  {order.order_items?.map((item: any, idx: number) => {
+                    const imgUrl = item.products?.image_url || item.products?.reference_image_url || null;
+                    return (
+                      <tr key={item.id || idx} style={{ borderBottom: '1px solid #eee' }}>
+                        <td style={{ padding: '10px 12px', fontWeight: 'bold', fontSize: '14px' }}>{item.quantity}</td>
+                        <td style={{ padding: '10px 12px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            {imgUrl ? (
+                              <img 
+                                src={imgUrl} 
+                                alt={item.product_title} 
+                                style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #ddd' }} 
+                              />
+                            ) : (
+                              <div style={{ width: '48px', height: '48px', background: '#f0f0f0', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>💎</div>
+                            )}
+                            <div>
+                              <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#101010' }}>{item.product_title}</div>
+                              {item.size && <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>Talla: {item.size}</div>}
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ padding: '10px 12px', textAlign: 'right' }}>${(item.price || 0).toLocaleString('es-CL')}</td>
+                        <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 'bold' }}>
+                          ${((item.price || 0) * item.quantity).toLocaleString('es-CL')}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
