@@ -203,19 +203,28 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
       if (imageFile) fd.append('image', imageFile);
       if (refImageFile) fd.append('referenceImage', refImageFile);
 
-      let result;
+      let response;
       if (productToEdit) {
-        result = await updateProduct(productToEdit.id, fd);
+        fd.append('productId', String(productToEdit.id));
+        response = await fetch('/api/admin/products', {
+          method: 'PUT',
+          body: fd,
+        });
       } else {
-        result = await createProduct(fd);
+        response = await fetch('/api/admin/products', {
+          method: 'POST',
+          body: fd,
+        });
       }
 
-      if (result.success) {
+      const result = await response.json();
+
+      if (response.ok && result.success) {
         toast({ type: 'success', message: result.message });
         handleClose();
         onSuccess?.();
       } else {
-        toast({ type: 'error', message: result.message });
+        toast({ type: 'error', message: result.message || 'Error al procesar la solicitud' });
       }
     } catch (err: any) {
       console.error('Error submitting product:', err);
