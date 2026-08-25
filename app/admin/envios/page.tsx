@@ -16,11 +16,21 @@ const S = {
   green:    '#2E7D32'
 };
 
+const MONTHS = [
+  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+];
+
 export default function AdminEnvios() {
   const [orders, setOrders] = useState<any[]>([]);
   const [filter, setFilter] = useState<'Pendiente' | 'Pagado' | 'Enviado'>('Pagado');
   const [loading, setLoading] = useState(true);
   const [printOrders, setPrintOrders] = useState<any[] | null>(null);
+
+  // Timeframe / monthly history filters
+  const [timeframe, setTimeframe] = useState<'semanal' | 'mensual' | 'todos'>('todos');
+  const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
 
   useEffect(() => {
     fetchOrders();
@@ -95,13 +105,79 @@ export default function AdminEnvios() {
     }, 300);
   };
 
-  const filteredOrders = orders.filter(o => {
-    if (filter === 'Pagado') return o.status === 'Pagado' || o.status === 'Pendiente';
-    return o.status === filter;
-  });
-
   const pendingDispatches = orders.filter(o => o.status === 'Pagado' || o.status === 'Pendiente');
   const shippedDispatches = orders.filter(o => o.status === 'Enviado');
+
+  // Filter shippedDispatches based on timeframe selection
+  const filteredShippedDispatches = shippedDispatches.filter(o => {
+    const orderDate = new Date(o.created_at);
+    if (timeframe === 'semanal') {
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      return orderDate >= oneWeekAgo;
+    }
+    if (timeframe === 'mensual') {
+      return orderDate.getMonth() === selectedMonth && orderDate.getFullYear() === selectedYear;
+    }
+    return true;
+  });
+
+  const filteredOrders = filter === 'Pagado' ? pendingDispatches : filteredShippedDispatches;
+
+  // Export dynamically filtered orders to CSV
+  const exportToCSV = (ordersToExport: any[]) => {
+    const headers = [
+      'ID Orden',
+      'Fecha Creacion',
+      'Cliente',
+      'RUT',
+      'Email',
+      'Telefono',
+      'Courier o Metodo',
+      'Region',
+      'Comuna',
+      'Direccion o Punto',
+      'Total Articulos',
+      'Total Venta CLP'
+    ];
+
+    const rows = ordersToExport.map(o => {
+      const itemsCount = o.order_items?.reduce((sum: number, item: any) => sum + (item.quantity || 1), 0) || 1;
+      const calculatedSubtotal = o.order_items?.reduce((sum: number, item: any) => sum + ((item.price || 0) * (item.quantity || 1)), 0) || 0;
+      const shippingCost = o.shipping_cost || 0;
+      const totalCost = calculatedSubtotal + shippingCost;
+      const address = o.delivery_method === 'domicilio' ? o.shipping_address : o.pickup_point_name;
+
+      return [
+        o.id,
+        new Date(o.created_at).toLocaleDateString('es-CL'),
+        o.client_name,
+        o.client_rut,
+        o.client_email,
+        o.client_phone || 'N/A',
+        o.delivery_method === 'domicilio' ? 'Blue Express Domicilio' : 'Punto Blue Express',
+        o.shipping_region,
+        o.shipping_comuna,
+        `"${String(address || '').replace(/"/g, '""')}"`,
+        itemsCount,
+        totalCost
+      ];
+    });
+
+    const csvContent = "\uFEFF" + [
+      headers.join(','),
+      ...rows.map(e => e.join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `amora_reporte_despachos_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div style={{ minHeight: '100vh', background: S.ivory, fontFamily: 'Inter, sans-serif' }}>
@@ -167,28 +243,29 @@ export default function AdminEnvios() {
           <h1 style={{ margin: 0, fontFamily: 'Cinzel, serif', fontSize: '1.2rem', color: S.gold }}>Módulo de Resumen de Envíos</h1>
         </div>
 
-        {/* Botón Principal de Generación de Notas de Despacho */}
+        {/* Botón Principal de Generación de Notas de Despacho (Solo para Pendientes) */}
         <button 
-          onClick={() => handlePrintAll(filteredOrders.length > 0 ? filteredOrders : orders)}
-          disabled={orders.length === 0}
+          onClick={() => handlePrintAll(pendingDispatches)}
+          disabled={pendingDispatches.length === 0}
           style={{
-            background: orders.length > 0 ? S.gold : S.muted,
+            background: pendingDispatches.length > 0 ? S.gold : S.muted,
             color: S.obsidian,
             border: 'none',
             padding: '12px 24px',
             borderRadius: 6,
             fontWeight: 700,
             fontSize: '0.95rem',
-            cursor: orders.length > 0 ? 'pointer' : 'not-allowed',
+            cursor: pendingDispatches.length > 0 ? 'pointer' : 'not-allowed',
             display: 'flex',
             alignItems: 'center',
             gap: 10,
-            boxShadow: '0 4px 14px rgba(184,151,90,0.3)',
-            transition: 'transform 0.2s'
+            boxShadow: pendingDispatches.length > 0 ? '0 4px 14px rgba(184,151,90,0.3)' : 'none',
+            transition: 'transform 0.2s',
+            opacity: pendingDispatches.length > 0 ? 1 : 0.6
           }}
         >
           <span>🖨️</span>
-          <span>Imprimir Notas de Despacho ({filteredOrders.length > 0 ? filteredOrders.length : orders.length})</span>
+          <span>Imprimir Notas de Despacho Pendientes ({pendingDispatches.length})</span>
         </button>
       </header>
 
@@ -216,6 +293,104 @@ export default function AdminEnvios() {
             </button>
           </div>
         </div>
+
+        {/* Historial Filters & Analytics Export Panel */}
+        {filter === 'Enviado' && (
+          <div style={{
+            background: S.offWhite,
+            border: `1px solid ${S.nude}`,
+            borderRadius: 8,
+            padding: '20px 24px',
+            marginBottom: 32,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 16,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.85rem', color: S.muted, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Filtrar historial:</span>
+              <button 
+                onClick={() => setTimeframe('todos')}
+                style={{
+                  padding: '8px 16px', borderRadius: 4, cursor: 'pointer', border: `1px solid ${S.nude}`,
+                  background: timeframe === 'todos' ? S.obsidian : 'transparent',
+                  color: timeframe === 'todos' ? S.gold : S.charcoal,
+                  fontWeight: 600, fontSize: '0.85rem', transition: 'all 0.2s'
+                }}>
+                Todos
+              </button>
+              <button 
+                onClick={() => setTimeframe('semanal')}
+                style={{
+                  padding: '8px 16px', borderRadius: 4, cursor: 'pointer', border: `1px solid ${S.nude}`,
+                  background: timeframe === 'semanal' ? S.obsidian : 'transparent',
+                  color: timeframe === 'semanal' ? S.gold : S.charcoal,
+                  fontWeight: 600, fontSize: '0.85rem', transition: 'all 0.2s'
+                }}>
+                Últimos 7 días
+              </button>
+              <button 
+                onClick={() => setTimeframe('mensual')}
+                style={{
+                  padding: '8px 16px', borderRadius: 4, cursor: 'pointer', border: `1px solid ${S.nude}`,
+                  background: timeframe === 'mensual' ? S.obsidian : 'transparent',
+                  color: timeframe === 'mensual' ? S.gold : S.charcoal,
+                  fontWeight: 600, fontSize: '0.85rem', transition: 'all 0.2s'
+                }}>
+                Mensual
+              </button>
+
+              {timeframe === 'mensual' && (
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginLeft: 8 }}>
+                  <select 
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                    style={{ padding: '8px 12px', borderRadius: 4, border: `1px solid ${S.nude}`, fontSize: '0.85rem', background: '#fff', fontWeight: 600 }}
+                  >
+                    {MONTHS.map((m, idx) => (
+                      <option key={idx} value={idx}>{m}</option>
+                    ))}
+                  </select>
+
+                  <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(Number(e.target.value))}
+                    style={{ padding: '8px 12px', borderRadius: 4, border: `1px solid ${S.nude}`, fontSize: '0.85rem', background: '#fff', fontWeight: 600 }}
+                  >
+                    {[2025, 2026, 2027].map(y => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={() => exportToCSV(filteredShippedDispatches)}
+              disabled={filteredShippedDispatches.length === 0}
+              style={{
+                background: S.gold,
+                color: S.obsidian,
+                border: 'none',
+                padding: '10px 20px',
+                borderRadius: 6,
+                cursor: filteredShippedDispatches.length > 0 ? 'pointer' : 'not-allowed',
+                fontWeight: 700,
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                transition: 'transform 0.2s',
+                opacity: filteredShippedDispatches.length > 0 ? 1 : 0.5,
+                boxShadow: filteredShippedDispatches.length > 0 ? '0 4px 10px rgba(184,151,90,0.2)' : 'none'
+              }}
+            >
+              <span>📊</span> Exportar a Excel/CSV ({filteredShippedDispatches.length})
+            </button>
+          </div>
+        )}
 
         {loading ? (
           <p>Cargando órdenes de envío...</p>
