@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 import { useCart } from '../components/CartContext';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -42,7 +43,23 @@ export default function CheckoutPage() {
   // Añadimos un recargo estimado para despacho a domicilio (aprox 25% extra) por ir puerta a puerta desde Santiago
   const homeDeliverySurcharge = deliveryMethod === 'domicilio' && selectedRegion ? Math.ceil((baseShippingCost * 0.25) / 100) * 100 : 0;
   const shippingCost = 0; // baseShippingCost + homeDeliverySurcharge; // TEMPORAL PARA PRUEBAS
-  const finalTotal = cartTotal + shippingCost;
+
+  // Coupon integration states
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<any | null>(null);
+  const [couponError, setCouponError] = useState('');
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+
+  let discountAmount = 0;
+  if (appliedCoupon) {
+    if (appliedCoupon.discount_type === 'percent') {
+      discountAmount = Math.round((cartTotal * Number(appliedCoupon.discount_value)) / 100);
+    } else {
+      discountAmount = Math.min(Number(appliedCoupon.discount_value), cartTotal);
+    }
+  }
+
+  const finalTotal = Math.max(0, cartTotal - discountAmount) + shippingCost;
 
   // Filtrar comunas y puntos de retiro
   const availableComunas = Array.from(new Set(
@@ -68,6 +85,46 @@ export default function CheckoutPage() {
   const sectionTitleStyle = {
     fontFamily: 'Cinzel, serif', fontSize: '1.2rem', color: S.obsidian,
     marginBottom: '24px', fontWeight: 400, marginTop: '32px'
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    if (!clientEmail.trim()) {
+      setCouponError('Debes ingresar tu correo electrónico en la sección de contacto antes de aplicar un cupón.');
+      return;
+    }
+
+    setIsApplyingCoupon(true);
+    setCouponError('');
+
+    try {
+      const res = await fetch('/api/checkout/validate-coupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          code: couponCode.toUpperCase().trim(),
+          email: clientEmail
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setAppliedCoupon(data.coupon);
+        setCouponError('');
+      } else {
+        setCouponError(data.error || 'Código de cupón inválido.');
+        setAppliedCoupon(null);
+      }
+    } catch (err: any) {
+      setCouponError('Error conectando con el servidor.');
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode('');
+    setCouponError('');
   };
 
   const handleSubmit = async () => {
@@ -101,7 +158,9 @@ export default function CheckoutPage() {
         subtotal: cartTotal,
         shipping_cost: shippingCost,
         total: finalTotal,
-        status: 'Pendiente'
+        status: 'Pendiente',
+        applied_coupon: appliedCoupon ? appliedCoupon.code : null,
+        discount_amount: discountAmount
       };
 
       const itemsPayload = cart.map(item => ({
@@ -419,11 +478,63 @@ export default function CheckoutPage() {
               </div>
             )}
 
+            {/* Sección de Cupones */}
+            <div style={{ borderTop: `1px solid ${S.nudeDark}`, paddingTop: 20, marginBottom: 20 }}>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <input 
+                  type="text" 
+                  placeholder="Cupón de descuento" 
+                  value={couponCode} 
+                  onChange={e => setCouponCode(e.target.value.toUpperCase())}
+                  disabled={!!appliedCoupon}
+                  style={{
+                    flex: 1, padding: '10px 14px', border: `1px solid ${S.nudeDark}`, 
+                    background: '#fff', fontSize: '0.9rem', outline: 'none'
+                  }} 
+                />
+                {appliedCoupon ? (
+                  <button 
+                    onClick={handleRemoveCoupon}
+                    style={{
+                      background: S.gold, color: S.obsidian, border: 'none', 
+                      padding: '10px 16px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600
+                    }}
+                  >
+                    Quitar
+                  </button>
+                ) : (
+                  <button 
+                    onClick={handleApplyCoupon}
+                    disabled={isApplyingCoupon || !couponCode}
+                    style={{
+                      background: S.obsidian, color: S.gold, border: 'none', 
+                      padding: '10px 16px', cursor: (isApplyingCoupon || !couponCode) ? 'not-allowed' : 'pointer', 
+                      fontSize: '0.85rem', fontWeight: 600, opacity: (isApplyingCoupon || !couponCode) ? 0.6 : 1
+                    }}
+                  >
+                    {isApplyingCoupon ? '...' : 'Aplicar'}
+                  </button>
+                )}
+              </div>
+              {couponError && <p style={{ color: '#C62828', fontSize: '0.8rem', margin: '6px 0 0 0' }}>{couponError}</p>}
+              {appliedCoupon && (
+                <p style={{ color: '#2E7D32', fontSize: '0.8rem', margin: '6px 0 0 0', fontWeight: 600 }}>
+                  ✓ Cupón {appliedCoupon.code} aplicado ({appliedCoupon.discount_type === 'percent' ? `${appliedCoupon.discount_value}%` : `$${Number(appliedCoupon.discount_value).toLocaleString('es-CL')}`} desc.)
+                </p>
+              )}
+            </div>
+
             <div style={{ borderTop: `1px solid ${S.nudeDark}`, paddingTop: 24 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                 <span style={{ color: S.muted, fontSize: '0.9rem' }}>Subtotal</span>
                 <span style={{ color: S.obsidian, fontSize: '0.95rem' }}>${cartTotal.toLocaleString('es-CL')}</span>
               </div>
+              {discountAmount > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, color: '#2E7D32' }}>
+                  <span style={{ fontSize: '0.9rem' }}>Descuento ({appliedCoupon?.code})</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 600 }}>-${discountAmount.toLocaleString('es-CL')}</span>
+                </div>
+              )}
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24 }}>
                 <span style={{ color: S.muted, fontSize: '0.9rem' }}>Envío</span>
                 <span style={{ color: selectedRegion ? S.obsidian : S.muted, fontSize: '0.9rem' }}>
