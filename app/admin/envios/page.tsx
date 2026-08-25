@@ -41,33 +41,37 @@ export default function AdminEnvios() {
   };
 
   const markAsShipped = async (order: any) => {
-    const { error } = await supabase
-      .from('orders')
-      .update({ status: 'Enviado' })
-      .eq('id', order.id);
-      
-    if (error) {
-      alert('Error: ' + error.message);
-    } else {
-      setOrders(orders.map(o => o.id === order.id ? { ...o, status: 'Enviado' } : o));
-      
-      try {
-        await fetch('/api/emails/order-shipped', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: order.client_email,
-            orderId: order.id,
-            name: order.client_name,
-            method: order.delivery_method,
-            address: order.delivery_method === 'domicilio' ? order.shipping_address : order.pickup_point_name
-          }),
-        });
-        alert('Orden marcada como Enviada. Correo enviado al cliente.');
-      } catch (err) {
-        console.error('Error enviando correo de despacho', err);
-        alert('Orden actualizada, pero hubo un error enviando el correo.');
+    try {
+      const res = await fetch('/api/admin/orders/update-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: order.id, status: 'Enviado' }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setOrders(orders.map(o => o.id === order.id ? { ...o, status: 'Enviado' } : o));
+        
+        try {
+          await fetch('/api/emails/order-shipped', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: order.client_email,
+              orderId: order.id,
+              name: order.client_name,
+              method: order.delivery_method,
+              address: order.delivery_method === 'domicilio' ? order.shipping_address : order.pickup_point_name
+            }),
+          });
+        } catch (err) {
+          console.error('Error enviando correo de despacho', err);
+        }
+        alert('Orden marcada como Enviada exitosamente.');
+      } else {
+        alert('Error actualizando estado: ' + (data.error || 'Error desconocido'));
       }
+    } catch (err: any) {
+      alert('Error de conexión: ' + err.message);
     }
   };
 

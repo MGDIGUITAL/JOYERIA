@@ -29,10 +29,21 @@ export default function VentasPage() {
   };
 
   const updateStatus = async (id: string, newStatus: string) => {
-    const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', id);
-    if (!error) {
-      setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
-      if (selectedOrder?.id === id) setSelectedOrder({ ...selectedOrder, status: newStatus });
+    try {
+      const res = await fetch('/api/admin/orders/update-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: id, status: newStatus }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
+        if (selectedOrder?.id === id) setSelectedOrder({ ...selectedOrder, status: newStatus });
+      } else {
+        alert('Error actualizando estado: ' + (data.error || 'Error desconocido'));
+      }
+    } catch (err: any) {
+      alert('Error de conexión: ' + err.message);
     }
   };
 
