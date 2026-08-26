@@ -353,10 +353,37 @@ function Hero() {
       <style>{`
         .hero-img-mobile { display: none !important; }
         .hero-btn-container { justify-content: flex-end; padding: 0 5vw; }
+        .hero-catalog-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background-color: ${S.obsidian} !important;
+          color: ${S.offWhite} !important;
+          font-family: 'Cinzel', serif;
+          font-size: 0.8rem;
+          font-weight: 600;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          padding: 18px 44px;
+          border: 1px solid ${S.obsidian};
+          box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+          text-decoration: none;
+          transition: all 0.3s ease;
+          border-radius: 4px;
+        }
         @media (max-width: 768px) {
           .hero-img-desktop { display: none !important; }
           .hero-img-mobile { display: block !important; }
-          .hero-btn-container { justify-content: center !important; padding: 0 !important; }
+          .hero-btn-container { justify-content: center !important; padding: 0 20px !important; }
+          .hero-catalog-btn {
+            background-color: #101010 !important;
+            color: #FFFFFF !important;
+            padding: 16px 36px !important;
+            font-size: 0.82rem !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.7) !important;
+            border-radius: 4px;
+          }
         }
       `}</style>
 
@@ -372,7 +399,10 @@ function Hero() {
       <Image className="hero-img-desktop" key={`curr-d-${current}`} src={FONDOS_DESKTOP[current]} alt="Amora Jewelry" fill priority style={{ objectFit:'cover', objectPosition:'center 20%', opacity:1, transition:'opacity 0.9s ease', zIndex:0 }} />
       <Image className="hero-img-mobile" key={`curr-m-${current}`} src={FONDOS_MOBILE[current]} alt="Amora Jewelry" fill priority style={{ objectFit:'cover', objectPosition:'center 20%', opacity:1, transition:'opacity 0.9s ease', zIndex:0 }} />
 
-      <div style={{ position:'absolute', bottom:72, left:'50%', transform:'translateX(-50%)', display:'flex', gap:8, zIndex:4 }}>
+      {/* Subtle overlay gradient on mobile so button is 100% legible over any photo */}
+      <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(16,16,16,0.35) 0%, transparent 50%)', zIndex:1 }} />
+
+      <div style={{ position:'absolute', bottom:40, left:'50%', transform:'translateX(-50%)', display:'flex', gap:8, zIndex:4 }}>
         {FONDOS_DESKTOP.map((_, i) => (
           <button key={i} onClick={() => setCurrent(i)} aria-label={`Ir a la imagen ${i + 1}`} style={{ width: i===current ? 24 : 8, height:8, borderRadius:4, border:'none', cursor:'pointer', transition:'all 0.35s', background: i===current ? S.obsidian : S.nudeDark, padding:0 }} />
         ))}
@@ -381,11 +411,10 @@ function Hero() {
       <div className="hero-btn-container" style={{ position:'relative', zIndex:3, width:'100%', display:'flex' }}>
         <div className="fade-in">
           <div style={{ display:'flex', gap:16, flexWrap:'wrap', justifyContent:'center' }}>
-            <a href="#joyeria" className="btn-primary">Ver Catálogo</a>
+            <a href="#joyeria" className="hero-catalog-btn">Ver Catálogo</a>
           </div>
         </div>
       </div>
-
 
     </section>
   );
