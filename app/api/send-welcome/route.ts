@@ -69,7 +69,7 @@ export async function POST(request: Request) {
         await supabaseAdmin.auth.admin.updateUserById(userId, { email_confirm: true });
       } else {
         const { data } = await supabaseAdmin.auth.admin.listUsers();
-        const target = data?.users?.find(u => u.email?.toLowerCase() === email.toLowerCase());
+        const target = data?.users?.find((u: any) => u.email?.toLowerCase() === email.toLowerCase());
         if (target) {
           await supabaseAdmin.auth.admin.updateUserById(target.id, { email_confirm: true });
         }
