@@ -25,7 +25,7 @@ const CATS = ['Todos', 'Anillos', 'Cadenas', 'Pulseras', 'Aros'];
 function PromoBar() {
   return (
     <div className="promo-bar" style={{ padding:'10px 0', textAlign:'center', color:S.ivory, fontFamily:'Cinzel,serif', fontSize:'0.72rem', fontWeight:600, letterSpacing:'0.18em' }}>
-      ✦ DESPACHO GRATIS EN TODAS LAS COMPRAS &nbsp;·&nbsp; CUPÓN <strong>AMORA10</strong> – 10% EN TU PRIMERA COMPRA ✦
+      ✦ DESPACHO GRATIS EN TODAS LAS COMPRAS &nbsp;·&nbsp; CUPÓN <strong>AMORAJEWELRY</strong> – 10% EN TU PRIMERA COMPRA ✦
     </div>
   );
 }

@@ -153,7 +153,7 @@ export default function CuponesPage() {
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: S.charcoal, marginBottom: '6px' }}>Código del Cupón *</label>
               <input 
                 type="text" 
-                placeholder="Ej: AMORA10" 
+                placeholder="Ej: AMORAJEWELRY" 
                 value={code}
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
                 style={{ width: '100%', padding: '12px', borderRadius: '6px', border: `1px solid ${S.nudeDark}`, fontSize: '0.9rem', outline: 'none' }}

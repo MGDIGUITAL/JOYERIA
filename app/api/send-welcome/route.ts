@@ -39,6 +39,11 @@ const WelcomeEmailHtml = (userName: string) => `
             <h1>¡Hola, ${userName}!</h1>
             <p>Es un honor darte la bienvenida al mundo de <strong>Amora Jewelry</strong>.</p>
             <p>Tu cuenta ha sido creada exitosamente. A partir de ahora, tendrás acceso a nuestras colecciones exclusivas, beneficios únicos y un proceso de compra rápido y seguro.</p>
+            <div style="background: #F3F0E9; border: 1px solid #E3DBCC; padding: 16px; border-radius: 8px; margin: 24px 0; text-align: center;">
+              <p style="margin: 0 0 6px 0; font-size: 13px; color: #7A7468; text-transform: uppercase; letter-spacing: 1px;">Regalo de Bienvenida</p>
+              <p style="margin: 0; font-size: 18px; color: #B8975A; font-weight: bold; letter-spacing: 2px;">CUPÓN: AMORAJEWELRY</p>
+              <p style="margin: 6px 0 0 0; font-size: 13px; color: #101010;">Obtén un <strong>10% de descuento</strong> en tu primera compra.</p>
+            </div>
             <p>Descubre el poder de la joyería atemporal.</p>
           </div>
           
