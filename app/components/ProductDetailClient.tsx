@@ -134,7 +134,7 @@ export default function ProductDetailClient({ product }: { product: any }) {
       `}</style>
 
       {/* NAVBAR SUPER SIMPLE PARA VOLVER */}
-      <nav style={{ padding: '16px 5%', background: S.offWhite, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${S.nude}`, sticky: 'top', top: 0, zIndex: 50 }}>
+      <nav style={{ padding: '16px 5%', background: S.offWhite, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${S.nude}`, position: 'sticky', top: 0, zIndex: 50 }}>
         <Link href="/" style={{ fontFamily: 'Cinzel, serif', fontSize: '1.2rem', fontWeight: 600, color: S.obsidian, textDecoration: 'none', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: 6 }}>
           AMORA <span style={{ fontSize: '0.75rem', fontWeight: 400, letterSpacing: '0.15em', color: S.gold }}>JEWELRY</span>
         </Link>
