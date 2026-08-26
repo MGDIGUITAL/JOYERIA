@@ -139,24 +139,78 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
   const isUnlimited = watch('isUnlimitedStock');
   const category = watch('category');
 
+  // ── Image compression helper ────────────────────────────────────────────────
+  const compressImage = async (file: File, maxWidth = 1400, maxHeight = 1400, quality = 0.85): Promise<File> => {
+    return new Promise((resolve) => {
+      if (file.type === 'image/svg+xml' || file.size < 200 * 1024) {
+        return resolve(file);
+      }
+      const img = document.createElement('img');
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        let { width, height } = img;
+        if (width > maxWidth || height > maxHeight) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve(file);
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) return resolve(file);
+            const compressedFile = new File(
+              [blob],
+              file.name.replace(/\.[^/.]+$/, '') + '.webp',
+              { type: 'image/webp' }
+            );
+            resolve(compressedFile);
+          },
+          'image/webp',
+          quality
+        );
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(file);
+      };
+      img.src = url;
+    });
+  };
+
   // ── Image handling helpers ──────────────────────────────────────────────────
   const validateImage = (file: File) => {
     if (!file.type.startsWith('image/')) {
       toast({ type: 'error', message: 'Solo se permiten archivos de imagen (PNG, JPG, WebP)' });
       return false;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ type: 'error', message: 'La imagen no debe superar los 5 MB' });
+    if (file.size > 25 * 1024 * 1024) {
+      toast({ type: 'error', message: 'La imagen no debe superar los 25 MB' });
       return false;
     }
     return true;
   };
 
   // Main Image handlers
-  const handleImageFile = useCallback((file: File) => {
+  const handleImageFile = useCallback(async (file: File) => {
     if (!validateImage(file)) return;
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+    try {
+      const compressed = await compressImage(file);
+      setImageFile(compressed);
+      setImagePreview(URL.createObjectURL(compressed));
+    } catch {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
   }, []);
 
   const removeImage = useCallback(() => {
@@ -166,10 +220,16 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
   }, [imagePreview]);
 
   // Ref Image handlers
-  const handleRefImageFile = useCallback((file: File) => {
+  const handleRefImageFile = useCallback(async (file: File) => {
     if (!validateImage(file)) return;
-    setRefImageFile(file);
-    setRefImagePreview(URL.createObjectURL(file));
+    try {
+      const compressed = await compressImage(file);
+      setRefImageFile(compressed);
+      setRefImagePreview(URL.createObjectURL(compressed));
+    } catch {
+      setRefImageFile(file);
+      setRefImagePreview(URL.createObjectURL(file));
+    }
   }, []);
 
   const removeRefImage = useCallback(() => {
@@ -200,8 +260,14 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
       fd.append('status', status);
       fd.append('sizes', JSON.stringify(data.sizes || []));
       
-      if (imageFile) fd.append('image', imageFile);
-      if (refImageFile) fd.append('referenceImage', refImageFile);
+      if (imageFile) {
+        const compressedMain = await compressImage(imageFile);
+        fd.append('image', compressedMain);
+      }
+      if (refImageFile) {
+        const compressedRef = await compressImage(refImageFile);
+        fd.append('referenceImage', compressedRef);
+      }
 
       let response;
       if (productToEdit) {
@@ -217,7 +283,18 @@ export default function NewProductModal({ isOpen, onClose, onSuccess, productToE
         });
       }
 
-      const result = await response.json();
+      let result: any;
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        result = await response.json();
+      } else {
+        const text = await response.text();
+        if (response.status === 413 || text.includes('Request Entity') || text.includes('Too Large')) {
+          result = { success: false, message: 'Las imágenes son demasiado grandes para la red. Se han optimizado automáticamente, intenta de nuevo.' };
+        } else {
+          result = { success: false, message: `Error del servidor (${response.status})` };
+        }
+      }
 
       if (response.ok && result.success) {
         toast({ type: 'success', message: result.message });
