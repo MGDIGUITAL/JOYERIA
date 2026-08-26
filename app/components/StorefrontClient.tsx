@@ -32,9 +32,10 @@ function PromoBar() {
 
 // ─── NAVBAR ───────────────────────────────────────────────────────────────
 function Navbar() {
-  const [scrolled, setScrolled]     = useState(false);
-  const [userName, setUserName]     = useState<string | null>(null);
-  const [showMenu, setShowMenu]     = useState(false);
+  const [scrolled, setScrolled]         = useState(false);
+  const [userName, setUserName]         = useState<string | null>(null);
+  const [showMenu, setShowMenu]         = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const { cartCount, openCart } = useCart();
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -78,13 +79,13 @@ function Navbar() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setShowMenu(false);
+    setMobileDrawerOpen(false);
     window.location.href = '/';
   };
 
   const navBg  = scrolled ? 'rgba(253,252,248,0.97)' : 'rgba(253,252,248,0.95)';
   const linkColor = S.charcoal;
 
-  // Estilo del cuadro de botón (igual para Mi Cuenta y Colaborador)
   const btnBox: React.CSSProperties = {
     fontFamily:'Cinzel,serif', fontSize:'0.68rem', letterSpacing:'0.12em',
     textTransform:'uppercase', textDecoration:'none',
@@ -94,106 +95,237 @@ function Navbar() {
   };
 
   return (
-    <nav style={{ position:'sticky', top:0, zIndex:100, background:navBg, borderBottom:`1px solid ${S.nude}`, backdropFilter:'blur(20px)', transition:'all 0.3s' }}>
-      <div style={{ maxWidth:1320, margin:'0 auto', padding:'0 2rem', height:72, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-        <Link href="/" style={{ display:'flex', alignItems:'center', textDecoration:'none', flexShrink:0 }}>
-          <Image src="/Amora_Jewelry_logo_header_480x114.png" alt="Amora Jewelry" width={200} height={48} style={{ objectFit:'contain' }} priority />
-        </Link>
+    <>
+      <nav style={{ position:'sticky', top:0, zIndex:100, background:navBg, borderBottom:`1px solid ${S.nude}`, backdropFilter:'blur(20px)', transition:'all 0.3s', width:'100%' }}>
+        <style>{`
+          .nav-desktop-links { display: flex; gap: 36px; align-items: center; }
+          .nav-desktop-actions { display: flex; gap: 12px; align-items: center; }
+          .nav-mobile-hamburger { display: none; }
+          
+          @media (max-width: 960px) {
+            .nav-desktop-links { display: none !important; }
+            .nav-desktop-actions .hide-mobile-item { display: none !important; }
+            .nav-mobile-hamburger { display: flex !important; }
+            .nav-inner-container { padding: 0 1rem !important; height: 60px !important; }
+            .nav-logo-img { width: 140px !important; height: 34px !important; }
+          }
+        `}</style>
+        
+        <div className="nav-inner-container" style={{ maxWidth:1320, margin:'0 auto', padding:'0 2rem', height:72, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          
+          {/* Mobile Hamburger Button */}
+          <button 
+            className="nav-mobile-hamburger"
+            onClick={() => setMobileDrawerOpen(true)}
+            aria-label="Abrir menú de navegación"
+            style={{ background:'none', border:'none', cursor:'pointer', padding:4, display:'flex', alignItems:'center', justifyContent:'center' }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={S.obsidian} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
 
-        <div style={{ display:'flex', gap:36, alignItems:'center' }}>
-          {[
-            { l:'Novedades', h:'#novedades' },
-            { l:'Catálogo',  h:'#joyeria' },
-            { l:'Regalos',   h:'/regalos' },
-          ].map(({ l, h }) => (
-            <a key={l} href={h} style={{ color:linkColor, textDecoration:'none', fontFamily:'Cinzel,serif', fontSize:'0.7rem', letterSpacing:'0.12em', textTransform:'uppercase', transition:'color 0.2s' }}
-              onMouseEnter={e=>(e.currentTarget.style.color=S.gold)}
-              onMouseLeave={e=>(e.currentTarget.style.color=linkColor)}
-            >{l}</a>
-          ))}
-          <a href="#sale" style={{ color:S.gold, textDecoration:'none', fontFamily:'Cinzel,serif', fontSize:'0.7rem', letterSpacing:'0.12em', textTransform:'uppercase' }}>Sale</a>
-        </div>
+          {/* Logo */}
+          <Link href="/" style={{ display:'flex', alignItems:'center', textDecoration:'none', flexShrink:0 }}>
+            <Image className="nav-logo-img" src="/Amora_Jewelry_logo_header_480x114.png" alt="Amora Jewelry" width={200} height={48} style={{ objectFit:'contain' }} priority />
+          </Link>
 
-        <div style={{ display:'flex', gap:12, alignItems:'center' }}>
-          {/* Íconos */}
-          {[
-            { img:'/amora_buscar.png',   title:'Buscar' },
-            { img:'/amora_favoritos.png',title:'Favoritos' },
-          ].map(a => (
-            <button key={a.title} title={a.title} style={{ width:30, height:30, background:'none', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', opacity:1, transition:'opacity 0.2s' }}
+          {/* Desktop Links */}
+          <div className="nav-desktop-links">
+            {[
+              { l:'Novedades', h:'#novedades' },
+              { l:'Catálogo',  h:'#joyeria' },
+              { l:'Regalos',   h:'/regalos' },
+            ].map(({ l, h }) => (
+              <a key={l} href={h} style={{ color:linkColor, textDecoration:'none', fontFamily:'Cinzel,serif', fontSize:'0.7rem', letterSpacing:'0.12em', textTransform:'uppercase', transition:'color 0.2s' }}
+                onMouseEnter={e=>(e.currentTarget.style.color=S.gold)}
+                onMouseLeave={e=>(e.currentTarget.style.color=linkColor)}
+              >{l}</a>
+            ))}
+            <a href="#sale" style={{ color:S.gold, textDecoration:'none', fontFamily:'Cinzel,serif', fontSize:'0.7rem', letterSpacing:'0.12em', textTransform:'uppercase' }}>Sale</a>
+          </div>
+
+          {/* Actions */}
+          <div className="nav-desktop-actions">
+            {/* Ícono Buscar */}
+            <button title="Buscar" style={{ width:30, height:30, background:'none', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', opacity:1, transition:'opacity 0.2s' }}
               onMouseEnter={e=>(e.currentTarget.style.opacity='0.6')}
               onMouseLeave={e=>(e.currentTarget.style.opacity='1')}
             >
               <div style={{ position:'relative', width:'100%', height:'100%' }}>
-                <Image src={a.img} alt={a.title} fill style={{ objectFit:'contain' }} />
+                <Image src="/amora_buscar.png" alt="Buscar" fill style={{ objectFit:'contain' }} />
               </div>
             </button>
-          ))}
 
-          {/* Carrito con badge */}
-          <button title="Carrito" onClick={openCart} style={{ width:30, height:30, background:'none', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', position:'relative', transition:'opacity 0.2s' }}
-            onMouseEnter={e=>(e.currentTarget.style.opacity='0.6')}
-            onMouseLeave={e=>(e.currentTarget.style.opacity='1')}
-          >
-            <div style={{ position:'relative', width:'100%', height:'100%' }}>
-              <Image src="/amora_carrito.png" alt="Carrito" fill style={{ objectFit:'contain' }} />
-            </div>
-            {cartCount > 0 && (
-              <span style={{ position:'absolute', top:-4, right:-4, background:S.obsidian, color:S.offWhite, borderRadius:'50%', width:16, height:16, fontSize:'0.55rem', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Inter,sans-serif', fontWeight:700 }}>
-                {cartCount}
-              </span>
-            )}
-          </button>
+            {/* Ícono Favoritos (Hide on tiny screens if needed) */}
+            <button className="hide-mobile-item" title="Favoritos" style={{ width:30, height:30, background:'none', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', opacity:1, transition:'opacity 0.2s' }}
+              onMouseEnter={e=>(e.currentTarget.style.opacity='0.6')}
+              onMouseLeave={e=>(e.currentTarget.style.opacity='1')}
+            >
+              <div style={{ position:'relative', width:'100%', height:'100%' }}>
+                <Image src="/amora_favoritos.png" alt="Favoritos" fill style={{ objectFit:'contain' }} />
+              </div>
+            </button>
 
-          {/* Separador */}
-          <span style={{ width:1, height:24, background:S.nude, display:'block' }} />
+            {/* Carrito con badge */}
+            <button title="Carrito" onClick={openCart} style={{ width:30, height:30, background:'none', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', position:'relative', transition:'opacity 0.2s' }}
+              onMouseEnter={e=>(e.currentTarget.style.opacity='0.6')}
+              onMouseLeave={e=>(e.currentTarget.style.opacity='1')}
+            >
+              <div style={{ position:'relative', width:'100%', height:'100%' }}>
+                <Image src="/amora_carrito.png" alt="Carrito" fill style={{ objectFit:'contain' }} />
+              </div>
+              {cartCount > 0 && (
+                <span style={{ position:'absolute', top:-4, right:-4, background:S.obsidian, color:S.offWhite, borderRadius:'50%', width:16, height:16, fontSize:'0.55rem', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Inter,sans-serif', fontWeight:700 }}>
+                  {cartCount}
+                </span>
+              )}
+            </button>
 
-          {/* Botón Mi Cuenta / Nombre del cliente */}
-          <div ref={menuRef} style={{ position:'relative' }}>
-            {userName ? (
-              <>
-                <button
-                  onClick={() => setShowMenu(v => !v)}
-                  style={{ ...btnBox, background: showMenu ? S.obsidian : 'transparent', color: showMenu ? S.offWhite : S.obsidian }}
-                  onMouseEnter={e=>{ e.currentTarget.style.background=S.obsidian; e.currentTarget.style.color=S.offWhite; }}
-                  onMouseLeave={e=>{ if(!showMenu){ e.currentTarget.style.background='transparent'; e.currentTarget.style.color=S.obsidian; } }}
-                >
-                  {userName} ▾
-                </button>
-                {showMenu && (
-                  <div style={{ position:'absolute', top:'calc(100% + 8px)', right:0, background:S.offWhite, border:`1px solid ${S.nude}`, borderRadius:8, minWidth:160, boxShadow:'0 8px 24px rgba(0,0,0,0.08)', zIndex:200, overflow:'hidden' }}>
-                    <div style={{ padding:'10px 16px', fontFamily:'Cinzel,serif', fontSize:'0.6rem', letterSpacing:'0.1em', color:S.nudeDark, borderBottom:`1px solid ${S.nude}`, textTransform:'uppercase' }}>
-                      Mi cuenta
+            {/* Separador */}
+            <span className="hide-mobile-item" style={{ width:1, height:24, background:S.nude, display:'block' }} />
+
+            {/* Botón Mi Cuenta */}
+            <div className="hide-mobile-item" ref={menuRef} style={{ position:'relative' }}>
+              {userName ? (
+                <>
+                  <button
+                    onClick={() => setShowMenu(v => !v)}
+                    style={{ ...btnBox, background: showMenu ? S.obsidian : 'transparent', color: showMenu ? S.offWhite : S.obsidian }}
+                    onMouseEnter={e=>{ e.currentTarget.style.background=S.obsidian; e.currentTarget.style.color=S.offWhite; }}
+                    onMouseLeave={e=>{ if(!showMenu){ e.currentTarget.style.background='transparent'; e.currentTarget.style.color=S.obsidian; } }}
+                  >
+                    {userName} ▾
+                  </button>
+                  {showMenu && (
+                    <div style={{ position:'absolute', top:'calc(100% + 8px)', right:0, background:S.offWhite, border:`1px solid ${S.nude}`, borderRadius:8, minWidth:160, boxShadow:'0 8px 24px rgba(0,0,0,0.08)', zIndex:200, overflow:'hidden' }}>
+                      <div style={{ padding:'10px 16px', fontFamily:'Cinzel,serif', fontSize:'0.6rem', letterSpacing:'0.1em', color:S.nudeDark, borderBottom:`1px solid ${S.nude}`, textTransform:'uppercase' }}>
+                        Mi cuenta
+                      </div>
+                      <button onClick={handleLogout} style={{ width:'100%', padding:'12px 16px', background:'none', border:'none', textAlign:'left', fontFamily:'Cinzel,serif', fontSize:'0.68rem', color:S.obsidian, cursor:'pointer', letterSpacing:'0.08em', transition:'background 0.2s' }}
+                        onMouseEnter={e=>(e.currentTarget.style.background=S.ivory)}
+                        onMouseLeave={e=>(e.currentTarget.style.background='none')}
+                      >
+                        Cerrar sesión
+                      </button>
                     </div>
-                    <button onClick={handleLogout} style={{ width:'100%', padding:'12px 16px', background:'none', border:'none', textAlign:'left', fontFamily:'Cinzel,serif', fontSize:'0.68rem', color:S.obsidian, cursor:'pointer', letterSpacing:'0.08em', transition:'background 0.2s' }}
-                      onMouseEnter={e=>(e.currentTarget.style.background=S.ivory)}
-                      onMouseLeave={e=>(e.currentTarget.style.background='none')}
+                  )}
+                </>
+              ) : (
+                <Link href="/auth/cliente" style={btnBox}
+                  onMouseEnter={e=>{ (e.currentTarget as HTMLElement).style.background=S.obsidian; (e.currentTarget as HTMLElement).style.color=S.offWhite; }}
+                  onMouseLeave={e=>{ (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color=S.obsidian; }}
+                >
+                  Mi Cuenta
+                </Link>
+              )}
+            </div>
+
+            {/* Botón Colaborador */}
+            <Link className="hide-mobile-item" href="/auth/colaborador" style={{ ...btnBox, color:S.muted, border:`1px solid ${S.nude}` }}
+              onMouseEnter={e=>{ (e.currentTarget as HTMLElement).style.background=S.obsidian; (e.currentTarget as HTMLElement).style.color=S.offWhite; }}
+              onMouseLeave={e=>{ (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color=S.muted; }}
+            >
+              Colaborador
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* MOBILE DRAWER NAVIGATION OVERLAY */}
+      {mobileDrawerOpen && (
+        <>
+          <div 
+            onClick={() => setMobileDrawerOpen(false)} 
+            style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.6)', backdropFilter:'blur(4px)', zIndex:999, transition:'opacity 0.3s' }} 
+          />
+          <div style={{
+            position:'fixed', top:0, left:0, bottom:0, width:'85vw', maxWidth:340,
+            background:S.offWhite, zIndex:1000, padding:'24px 20px', display:'flex',
+            flexDirection:'column', justifyContent:'space-between', boxShadow:'8px 0 32px rgba(0,0,0,0.2)',
+            overflowY:'auto'
+          }}>
+            <div>
+              {/* Header Drawer */}
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', paddingBottom:20, borderBottom:`1px solid ${S.nude}` }}>
+                <Image src="/Amora_Jewelry_logo_header_480x114.png" alt="Amora Jewelry" width={140} height={34} style={{ objectFit:'contain' }} />
+                <button 
+                  onClick={() => setMobileDrawerOpen(false)}
+                  style={{ background:'none', border:'none', fontSize:'1.5rem', cursor:'pointer', color:S.obsidian, padding:4 }}
+                >✕</button>
+              </div>
+
+              {/* Links de Navegación */}
+              <div style={{ display:'flex', flexDirection:'column', gap:16, marginTop:24 }}>
+                {[
+                  { l:'Novedades', h:'#novedades' },
+                  { l:'Catálogo',  h:'#joyeria' },
+                  { l:'Regalos',   h:'/regalos' },
+                  { l:'Sale / Ofertas', h:'#sale', isGold: true },
+                ].map(({ l, h, isGold }) => (
+                  <a 
+                    key={l} 
+                    href={h} 
+                    onClick={() => setMobileDrawerOpen(false)}
+                    style={{
+                      fontFamily:'Cinzel,serif', fontSize:'0.9rem', letterSpacing:'0.1em',
+                      textTransform:'uppercase', textDecoration:'none',
+                      color: isGold ? S.gold : S.obsidian, fontWeight:600,
+                      padding:'10px 0', borderBottom:`1px solid ${S.ivory}`
+                    }}
+                  >
+                    {l}
+                  </a>
+                ))}
+              </div>
+
+              {/* Acceso a cuenta / colaborador */}
+              <div style={{ marginTop:32, display:'flex', flexDirection:'column', gap:12 }}>
+                {userName ? (
+                  <div style={{ background:S.ivory, padding:'12px 16px', borderRadius:8, border:`1px solid ${S.nude}` }}>
+                    <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.7rem', color:S.gold, textTransform:'uppercase', letterSpacing:'0.1em' }}>Sesión activa</p>
+                    <p style={{ fontWeight:600, fontSize:'0.9rem', color:S.obsidian, margin:'4px 0 10px' }}>{userName}</p>
+                    <button 
+                      onClick={handleLogout}
+                      style={{ width:'100%', padding:'8px', background:S.obsidian, color:S.offWhite, border:'none', borderRadius:4, fontFamily:'Cinzel,serif', fontSize:'0.7rem', cursor:'pointer' }}
                     >
-                      Cerrar sesión
+                      Cerrar Sesión
                     </button>
                   </div>
+                ) : (
+                  <Link 
+                    href="/auth/cliente" 
+                    onClick={() => setMobileDrawerOpen(false)}
+                    style={{ ...btnBox, width:'100%', textAlign:'center', padding:'12px', background:S.obsidian, color:S.offWhite, borderRadius:6 }}
+                  >
+                    Mi Cuenta / Ingresar
+                  </Link>
                 )}
-              </>
-            ) : (
-              <Link href="/auth/cliente" style={btnBox}
-                onMouseEnter={e=>{ (e.currentTarget as HTMLElement).style.background=S.obsidian; (e.currentTarget as HTMLElement).style.color=S.offWhite; }}
-                onMouseLeave={e=>{ (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color=S.obsidian; }}
-              >
-                Mi Cuenta
-              </Link>
-            )}
-          </div>
 
-          {/* Botón Colaborador — mismo estilo de cuadro */}
-          <Link href="/auth/colaborador" style={{ ...btnBox, color:S.muted, border:`1px solid ${S.nude}` }}
-            onMouseEnter={e=>{ (e.currentTarget as HTMLElement).style.background=S.obsidian; (e.currentTarget as HTMLElement).style.color=S.offWhite; }}
-            onMouseLeave={e=>{ (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color=S.muted; }}
-          >
-            Colaborador
-          </Link>
-        </div>
-      </div>
-    </nav>
+                <Link 
+                  href="/auth/colaborador" 
+                  onClick={() => setMobileDrawerOpen(false)}
+                  style={{ ...btnBox, width:'100%', textAlign:'center', padding:'12px', borderRadius:6, color:S.muted }}
+                >
+                  Portal Colaborador
+                </Link>
+              </div>
+            </div>
+
+            {/* Footer Drawer */}
+            <div style={{ paddingTop:20, borderTop:`1px solid ${S.nude}`, fontSize:'0.75rem', color:S.muted }}>
+              <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.65rem', letterSpacing:'0.1em', marginBottom:6 }}>SÍGUENOS</p>
+              <div style={{ display:'flex', gap:16 }}>
+                <a href="https://www.instagram.com/amorajewelrychile/" target="_blank" rel="noreferrer" style={{ color:S.obsidian, textDecoration:'none' }}>Instagram</a>
+                <a href="https://wa.me/569XXXXXXXX" target="_blank" rel="noreferrer" style={{ color:S.obsidian, textDecoration:'none' }}>WhatsApp</a>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 }
 
@@ -307,7 +439,7 @@ function ProductCard({ p }: { p: any }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link href={`/product/${p.id}`} style={{ display: 'block', height:260, position:'relative', overflow:'hidden', background:S.offWhite, padding: '10px' }}>
+      <Link href={`/product/${p.id}`} className="product-card-img-link" style={{ display: 'block', height:260, position:'relative', overflow:'hidden', background:S.offWhite, padding: '10px' }}>
         <div style={{ width: '100%', height: '100%', display:'flex', alignItems:'center', justifyContent:'center' }}>
         {currentImage ? (
            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -337,15 +469,15 @@ function ProductCard({ p }: { p: any }) {
         </span>
         </div>
       </Link>
-      <div style={{ padding:'20px 20px 26px', background:S.ivory, flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div className="product-card-info" style={{ padding:'20px 20px 26px', background:S.ivory, flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Link href={`/product/${p.id}`} style={{ textDecoration: 'none' }}>
-          <h3 className="font-display" style={{ fontSize:'1.05rem', fontWeight:400, color:S.obsidian, lineHeight:1.3, marginBottom:16, cursor: 'pointer' }}>
+          <h3 className="font-display product-card-title" style={{ fontSize:'1.05rem', fontWeight:400, color:S.obsidian, lineHeight:1.3, marginBottom:16, cursor: 'pointer' }}>
             {p.title}
           </h3>
         </Link>
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop: 'auto' }}>
-          <span className="font-display" style={{ fontSize:'1.2rem', color:S.obsidian, fontWeight:300 }} suppressHydrationWarning>
-            ${p.sale_price.toLocaleString('es-CL')}
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginTop: 'auto', gap: 6, flexWrap: 'wrap' }}>
+          <span className="font-display product-card-price" style={{ fontSize:'1.2rem', color:S.obsidian, fontWeight:300 }} suppressHydrationWarning>
+            ${p.sale_price?.toLocaleString('es-CL')}
           </span>
           <button onClick={() => addToCart(p)} style={{
             fontFamily:'Cinzel,serif', fontSize:'0.58rem', letterSpacing:'0.1em', textTransform:'uppercase',
@@ -375,17 +507,17 @@ function Products({ products }: { products: any[] }) {
   }, [filter]);
 
   return (
-    <section id="joyeria" style={{ padding:'96px 2rem', background:S.ivory }}>
+    <section id="joyeria" style={{ padding:'60px 1rem', background:S.ivory }}>
       <div style={{ maxWidth:1400, margin:'0 auto' }}>
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:48, flexWrap:'wrap', gap:20 }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:36, flexWrap:'wrap', gap:16 }}>
           <div>
-            <h2 className="font-display" style={{ fontSize:'clamp(2.5rem,5vw,3.8rem)', fontWeight:300, color:S.obsidian }}>Catálogo</h2>
+            <h2 className="font-display" style={{ fontSize:'clamp(2.2rem,5vw,3.8rem)', fontWeight:300, color:S.obsidian }}>Catálogo</h2>
           </div>
           <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
             {CATS.map(c => (
               <button key={c} onClick={() => setFilter(c)} style={{
                 fontFamily:'Cinzel,serif', fontSize:'0.66rem', letterSpacing:'0.12em', textTransform:'uppercase',
-                padding:'8px 20px',
+                padding:'8px 16px',
                 background: filter===c ? S.obsidian : 'transparent',
                 color: filter===c ? S.offWhite : S.muted,
                 border: filter===c ? `1px solid ${S.obsidian}` : `1px solid ${S.nude}`,
@@ -401,24 +533,42 @@ function Products({ products }: { products: any[] }) {
           </div>
         ) : (
           <>
-            <div style={{ 
-              display:'grid', 
-              gridTemplateColumns:'repeat(auto-fill, minmax(240px, 1fr))', 
-              gap: 1, 
-              border:`1px solid ${S.nude}` 
-            }}>
-              <style>{`
-                @media (min-width: 1300px) {
-                  #joyeria .product-grid {
-                    grid-template-columns: repeat(5, 1fr) !important;
-                  }
+            <style>{`
+              .product-grid-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 1px;
+                border: 1px solid ${S.nude};
+              }
+              @media (min-width: 1300px) {
+                .product-grid-container {
+                  grid-template-columns: repeat(5, 1fr) !important;
                 }
-              `}</style>
-              <div className="product-grid" style={{ display: 'contents' }}>
-                {shown.map(p => (
-                  <ProductCard key={p.id} p={p} />
-                ))}
-              </div>
+              }
+              @media (max-width: 640px) {
+                .product-grid-container {
+                  grid-template-columns: repeat(2, 1fr) !important;
+                }
+                .product-card-img-link {
+                  height: 180px !important;
+                  padding: 6px !important;
+                }
+                .product-card-info {
+                  padding: 12px 10px 16px !important;
+                }
+                .product-card-title {
+                  font-size: 0.88rem !important;
+                  margin-bottom: 8px !important;
+                }
+                .product-card-price {
+                  font-size: 0.98rem !important;
+                }
+              }
+            `}</style>
+            <div className="product-grid-container">
+              {shown.map(p => (
+                <ProductCard key={p.id} p={p} />
+              ))}
             </div>
 
             {/* Load More Button */}
