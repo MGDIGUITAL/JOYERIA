@@ -56,17 +56,27 @@ export default function ClienteAuthPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true); setMsg(null);
-    const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password: loginPass });
+    const cleanEmail = loginEmail.trim();
+    const { error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password: loginPass });
     setLoading(false);
-    if (error) setMsg({ type: 'err', text: 'Correo o contraseña incorrectos.' });
-    else window.location.href = '/';
+    if (error) {
+      console.error('Error al ingresar:', error);
+      if (error.message.includes('Email not confirmed')) {
+        setMsg({ type: 'err', text: 'Tu correo está pendiente de confirmación. Por favor revisa tu correo o intenta de nuevo.' });
+      } else {
+        setMsg({ type: 'err', text: 'Correo o contraseña incorrectos. Verifica tus datos.' });
+      }
+    } else {
+      window.location.href = '/';
+    }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true); setMsg(null);
-    const { error } = await supabase.auth.signUp({
-      email: regEmail, password: regPass,
+    const cleanEmail = regEmail.trim();
+    const { data: signUpData, error } = await supabase.auth.signUp({
+      email: cleanEmail, password: regPass,
       options: { data: { full_name: regName, phone: regPhone, rut: regRut, role: 'cliente' } },
     });
     
@@ -74,18 +84,29 @@ export default function ClienteAuthPage() {
       setLoading(false);
       setMsg({ type: 'err', text: error.message });
     } else {
-      // Llamar a nuestra API para enviar el correo de bienvenida (Resend)
+      // Auto-confirmar el correo y enviar email de bienvenida
       try {
         await fetch('/api/send-welcome', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: regEmail, name: regName }),
+          body: JSON.stringify({ email: cleanEmail, name: regName, userId: signUpData?.user?.id }),
         });
       } catch (err) {
         console.error('No se pudo enviar el correo de bienvenida', err);
       }
+
+      // Iniciar sesión automáticamente
+      const { error: loginErr } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password: regPass,
+      });
+
       setLoading(false);
-      setMsg({ type: 'ok', text: `¡Bienvenida, ${regName}! Tu cuenta ha sido creada exitosamente. Ya puedes iniciar sesión.` });
+      if (loginErr) {
+        setMsg({ type: 'ok', text: `¡Bienvenido(a), ${regName}! Tu cuenta ha sido creada exitosamente. Ya puedes ingresar.` });
+      } else {
+        window.location.href = '/';
+      }
     }
   };
 

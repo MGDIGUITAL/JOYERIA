@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { supabaseAdmin } from '@/lib/supabase/server';
 
 const WelcomeEmailHtml = (userName: string) => `
 <!DOCTYPE html>
@@ -56,10 +57,25 @@ const WelcomeEmailHtml = (userName: string) => `
 
 export async function POST(request: Request) {
   try {
-    const { email, name } = await request.json();
+    const { email, name, userId } = await request.json();
 
     if (!email) {
       return NextResponse.json({ error: 'Falta el correo' }, { status: 400 });
+    }
+
+    // Auto-confirmar usuario en Supabase Auth
+    try {
+      if (userId) {
+        await supabaseAdmin.auth.admin.updateUserById(userId, { email_confirm: true });
+      } else {
+        const { data } = await supabaseAdmin.auth.admin.listUsers();
+        const target = data?.users?.find(u => u.email?.toLowerCase() === email.toLowerCase());
+        if (target) {
+          await supabaseAdmin.auth.admin.updateUserById(target.id, { email_confirm: true });
+        }
+      }
+    } catch (authErr) {
+      console.error('Error auto-confirmando usuario en Supabase:', authErr);
     }
 
     if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
