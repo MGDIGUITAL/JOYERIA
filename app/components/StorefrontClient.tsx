@@ -113,12 +113,12 @@ function Navbar() {
         
         <div className="nav-inner-container" style={{ maxWidth:1320, margin:'0 auto', padding:'0 2rem', height:72, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           
-          {/* Mobile Hamburger Button */}
+          {/* Mobile Hamburger Button — hidden on desktop via .nav-mobile-hamburger CSS */}
           <button 
             className="nav-mobile-hamburger"
             onClick={() => setMobileDrawerOpen(true)}
             aria-label="Abrir menú de navegación"
-            style={{ background:'none', border:'none', cursor:'pointer', padding:4, display:'flex', alignItems:'center', justifyContent:'center' }}
+            style={{ background:'none', border:'none', cursor:'pointer', padding:4, alignItems:'center', justifyContent:'center' }}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={S.obsidian} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="3" y1="12" x2="21" y2="12"></line>
