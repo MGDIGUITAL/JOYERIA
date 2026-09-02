@@ -157,6 +157,11 @@ export default function AdminEnvios() {
 
   const filteredOrders = filter === 'Pagado' ? pendingDispatches : filteredShippedDispatches;
 
+  // Active orders to be printed (defaults to all pending dispatches for instant pre-rendering)
+  const activePrintOrders = (printOrders !== null && printOrders.length > 0) 
+    ? printOrders 
+    : pendingDispatches;
+
   // Export dynamically filtered orders to CSV
   const exportToCSV = (ordersToExport: any[]) => {
     const headers = [
@@ -223,7 +228,7 @@ export default function AdminEnvios() {
 
         @page {
           size: A4 portrait;
-          margin: 0;
+          margin: 0mm;
         }
 
         @media print {
@@ -234,36 +239,33 @@ export default function AdminEnvios() {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
-          body * {
-            visibility: hidden;
-          }
-          #print-area, #print-area * {
-            visibility: visible;
+          .no-print {
+            display: none !important;
           }
           #print-area {
             display: block !important;
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
+            position: static !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
           .a4-page {
-            width: 210mm;
-            height: 295mm;
+            width: 100%;
+            max-width: 210mm;
+            min-height: 275mm;
             padding: 12mm 15mm;
             margin: 0 auto;
             background: #ffffff !important;
             color: #000000 !important;
             box-sizing: border-box;
-            page-break-after: always;
-            page-break-inside: avoid;
+            page-break-after: always !important;
+            break-after: page !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-          }
-          .no-print {
-            display: none !important;
           }
         }
       `}</style>
@@ -541,21 +543,14 @@ export default function AdminEnvios() {
 
       {/* ── PRINT AREA (PERFECT A4 SINGLE-PAGE FIT - PRE-RENDERED FOR INSTANT LOAD) ────── */}
       <div id="print-area">
-        {(() => {
-          const activePrintOrders = (printOrders !== null && printOrders.length > 0) 
-            ? printOrders 
-            : pendingDispatches;
+        {activePrintOrders.map((order) => {
+          const items = (order.order_items && order.order_items.length > 0) 
+            ? order.order_items 
+            : [{ id: 'fallback', quantity: 1, product_title: 'Joya Amora Jewelry', price: (order.subtotal || order.total || 15990) }];
 
-          if (!activePrintOrders || activePrintOrders.length === 0) return null;
-
-          return activePrintOrders.map((order) => {
-            const items = (order.order_items && order.order_items.length > 0) 
-              ? order.order_items 
-              : [{ id: 'fallback', quantity: 1, product_title: 'Joya Amora Jewelry', price: (order.subtotal || order.total || 15990) }];
-
-            const itemsSubtotal = items.reduce((sum: number, item: any) => sum + ((item.price || 0) * (item.quantity || 1)), 0);
-            const shippingCost = order.shipping_cost || 0;
-            const grandTotal = itemsSubtotal + shippingCost;
+          const itemsSubtotal = items.reduce((sum: number, item: any) => sum + ((item.price || 0) * (item.quantity || 1)), 0);
+          const shippingCost = order.shipping_cost || 0;
+          const grandTotal = itemsSubtotal + shippingCost;
 
           return (
             <div key={order.id} className="a4-page">
@@ -730,7 +725,7 @@ export default function AdminEnvios() {
 
             </div>
           );
-        })()}
+        })}
       </div>
 
     </div>
