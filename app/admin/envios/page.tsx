@@ -218,7 +218,7 @@ export default function AdminEnvios() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: S.ivory, fontFamily: 'Inter, sans-serif' }}>
+    <div className="admin-envios-root" style={{ minHeight: '100vh', background: S.ivory, fontFamily: 'Inter, sans-serif' }}>
       
       {/* ── CSS PRINT MEDIA STYLES ────────────────────────────────────────── */}
       <style>{`
@@ -232,10 +232,14 @@ export default function AdminEnvios() {
         }
 
         @media print {
-          html, body {
+          html, body, div, main, .admin-envios-root {
             margin: 0 !important;
             padding: 0 !important;
             background: #ffffff !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            overflow: visible !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
@@ -250,22 +254,22 @@ export default function AdminEnvios() {
             padding: 0 !important;
           }
           .a4-page {
-            width: 100%;
-            max-width: 210mm;
-            min-height: 275mm;
-            padding: 12mm 15mm;
-            margin: 0 auto;
+            width: 210mm !important;
+            height: 290mm !important;
+            max-height: 295mm !important;
+            padding: 12mm 15mm !important;
+            margin: 0 auto !important;
             background: #ffffff !important;
             color: #000000 !important;
-            box-sizing: border-box;
+            box-sizing: border-box !important;
             page-break-after: always !important;
             break-after: page !important;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
           }
         }
       `}</style>
