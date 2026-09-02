@@ -154,8 +154,31 @@ function PrintContent() {
           >
             🖨️ Imprimir Ahora ({orders.length})
           </button>
+          <a
+            href="/admin/envios"
+            style={{ 
+              background: '#2563EB', 
+              color: '#fff', 
+              textDecoration: 'none',
+              padding: '8px 16px', 
+              borderRadius: '4px', 
+              fontWeight: 'bold', 
+              fontSize: '13px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            ⬅️ Volver al Panel SaaS
+          </a>
           <button 
-            onClick={() => window.close()} 
+            onClick={() => {
+              if (window.history.length > 1) {
+                window.history.back();
+              } else {
+                window.location.href = '/admin/envios';
+              }
+            }} 
             style={{ 
               background: '#333', 
               color: '#fff', 
