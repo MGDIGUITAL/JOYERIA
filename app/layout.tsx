@@ -89,7 +89,7 @@ const jewelryStoreSchema = {
   '@type': 'JewelryStore',
   name: 'Amora Jewelry',
   url: 'https://amorajewelry.cl',
-  logo: 'https://amorajewelry.cl/logo.png',
+  logo: 'https://amorajewelry.cl/icon-512.png',
   image: 'https://amorajewelry.cl/og-image.png',
   description: 'Tienda de alta joyería y accesorios de lujo en Chile. Anillos, collares, pulseras y aros exclusivos.',
   telephone: '+56951555556',
@@ -126,8 +126,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="/icon-512.png" type="image/png" sizes="512x512" />
+        <link rel="icon" href="/icon.png" type="image/png" sizes="192x192" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jewelryStoreSchema) }}

@@ -137,7 +137,6 @@ function Navbar() {
             {[
               { l:'Novedades', h:'#novedades' },
               { l:'Catálogo',  h:'#joyeria' },
-              { l:'Regalos',   h:'/regalos' },
             ].map(({ l, h }) => (
               <a key={l} href={h} style={{ color:linkColor, textDecoration:'none', fontFamily:'Cinzel,serif', fontSize:'0.7rem', letterSpacing:'0.12em', textTransform:'uppercase', transition:'color 0.2s' }}
                 onMouseEnter={e=>(e.currentTarget.style.color=S.gold)}
@@ -262,7 +261,6 @@ function Navbar() {
                 {[
                   { l:'Novedades', h:'#novedades' },
                   { l:'Catálogo',  h:'#joyeria' },
-                  { l:'Regalos',   h:'/regalos' },
                   { l:'Sale / Ofertas', h:'#sale', isGold: true },
                 ].map(({ l, h, isGold }) => (
                   <a 
