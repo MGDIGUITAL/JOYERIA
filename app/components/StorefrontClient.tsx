@@ -158,15 +158,7 @@ function Navbar() {
               </div>
             </button>
 
-            {/* Ícono Favoritos (Hide on tiny screens if needed) */}
-            <button className="hide-mobile-item" title="Favoritos" style={{ width:30, height:30, background:'none', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', opacity:1, transition:'opacity 0.2s' }}
-              onMouseEnter={e=>(e.currentTarget.style.opacity='0.6')}
-              onMouseLeave={e=>(e.currentTarget.style.opacity='1')}
-            >
-              <div style={{ position:'relative', width:'100%', height:'100%' }}>
-                <Image src="/amora_favoritos.png" alt="Favoritos" fill style={{ objectFit:'contain' }} />
-              </div>
-            </button>
+
 
             {/* Carrito con badge */}
             <button title="Carrito" onClick={openCart} style={{ width:30, height:30, background:'none', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', position:'relative', transition:'opacity 0.2s' }}
