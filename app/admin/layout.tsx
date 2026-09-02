@@ -47,6 +47,11 @@ function NavItem({ icon, label, href, active }: { icon: React.ReactNode; label: 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
+  // Bypass Admin Sidebar & Header completely for pure print route
+  if (pathname === '/admin/envios/imprimir') {
+    return <>{children}</>;
+  }
+
   // Extract the active page name from pathname
   let pageName = 'Analíticas';
   const path = pathname || '';
@@ -59,7 +64,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   else if (path.includes('/balance')) pageName = 'Balance';
 
   return (
-    <div style={{
+    <div className="admin-layout-wrapper" style={{
       display: 'flex',
       height: '100vh',
       width: '100vw',
@@ -68,6 +73,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       fontFamily: 'Inter, system-ui, sans-serif',
       overflow: 'hidden'
     }}>
+      {/* ─── PRINT CSS OVERRIDES FOR ENTIRE ADMIN DASHBOARD ─── */}
+      <style>{`
+        @media print {
+          aside, header, nav, .no-print {
+            display: none !important;
+          }
+          body, html, main, .admin-layout-wrapper, .admin-layout-wrapper > div {
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            width: 100% !important;
+            overflow: visible !important;
+            background: #ffffff !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+          }
+        }
+      `}</style>
       {/* ─── SIDEBAR ─── */}
       <aside style={{
         width: '260px',
