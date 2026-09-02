@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { T } from '../components/shared';
 
 export default function VentasPage() {
@@ -245,12 +246,12 @@ export default function VentasPage() {
               <p style={{ fontSize: '0.75rem', color: T.textMuted, marginTop: '8px' }}>Al ingresar el tracking, el cliente será notificado de su envío (próximamente).</p>
             </div>
             
-            <button 
-              onClick={() => window.print()}
-              style={{ width: '100%', marginTop: '24px', background: T.bg, border: `1px solid ${T.border}`, padding: '12px', borderRadius: '8px', color: T.text, fontWeight: 600, cursor: 'pointer', display: 'flex', justifyContent: 'center', gap: '8px', alignItems: 'center' }}
+            <Link 
+              href="/admin/envios"
+              style={{ width: '100%', marginTop: '24px', background: T.primary, color: '#fff', border: 'none', padding: '12px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', display: 'flex', justifyContent: 'center', gap: '8px', alignItems: 'center', textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box' }}
             >
-              🖨 Imprimir Orden de Preparación
-            </button>
+              🖨 Imprimir Nota de Despacho A4 en Resumen de Envíos →
+            </Link>
           </div>
         )}
 

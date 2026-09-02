@@ -33,6 +33,12 @@ export default function AdminEnvios() {
 
   useEffect(() => {
     fetchOrders();
+
+    const handleAfterPrint = () => {
+      setPrintOrders(null);
+    };
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => window.removeEventListener('afterprint', handleAfterPrint);
   }, []);
 
   const fetchOrders = async () => {
@@ -108,22 +114,32 @@ export default function AdminEnvios() {
     }
   };
 
+  const pendingDispatches = orders.filter(o => o.status === 'Pagado' || o.status === 'Pendiente');
+  const shippedDispatches = orders.filter(o => o.status === 'Enviado');
+
   const handlePrintAll = (ordersToPrint: any[]) => {
-    setPrintOrders(ordersToPrint);
-    setTimeout(() => {
-      window.print();
-    }, 300);
+    const targetOrders = (ordersToPrint && ordersToPrint.length > 0) ? ordersToPrint : pendingDispatches;
+    if (!targetOrders || targetOrders.length === 0) {
+      alert('No hay órdenes pendientes para generar notas de despacho.');
+      return;
+    }
+    setPrintOrders(targetOrders);
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        window.print();
+      }, 150);
+    });
   };
 
   const handlePrintSingle = (order: any) => {
+    if (!order) return;
     setPrintOrders([order]);
-    setTimeout(() => {
-      window.print();
-    }, 300);
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        window.print();
+      }, 150);
+    });
   };
-
-  const pendingDispatches = orders.filter(o => o.status === 'Pagado' || o.status === 'Pendiente');
-  const shippedDispatches = orders.filter(o => o.status === 'Enviado');
 
   // Filter shippedDispatches based on timeframe selection
   const filteredShippedDispatches = shippedDispatches.filter(o => {
@@ -523,16 +539,23 @@ export default function AdminEnvios() {
         )}
       </main>
 
-      {/* ── PRINT AREA (PERFECT A4 SINGLE-PAGE FIT - HIDDEN ON SCREEN) ────── */}
+      {/* ── PRINT AREA (PERFECT A4 SINGLE-PAGE FIT - PRE-RENDERED FOR INSTANT LOAD) ────── */}
       <div id="print-area">
-        {printOrders && printOrders.map((order) => {
-          const items = (order.order_items && order.order_items.length > 0) 
-            ? order.order_items 
-            : [{ id: 'fallback', quantity: 1, product_title: 'Joya Amora Jewelry', price: (order.subtotal || order.total || 15990) }];
+        {(() => {
+          const activePrintOrders = (printOrders !== null && printOrders.length > 0) 
+            ? printOrders 
+            : pendingDispatches;
 
-          const itemsSubtotal = items.reduce((sum: number, item: any) => sum + ((item.price || 0) * (item.quantity || 1)), 0);
-          const shippingCost = order.shipping_cost || 0;
-          const grandTotal = itemsSubtotal + shippingCost;
+          if (!activePrintOrders || activePrintOrders.length === 0) return null;
+
+          return activePrintOrders.map((order) => {
+            const items = (order.order_items && order.order_items.length > 0) 
+              ? order.order_items 
+              : [{ id: 'fallback', quantity: 1, product_title: 'Joya Amora Jewelry', price: (order.subtotal || order.total || 15990) }];
+
+            const itemsSubtotal = items.reduce((sum: number, item: any) => sum + ((item.price || 0) * (item.quantity || 1)), 0);
+            const shippingCost = order.shipping_cost || 0;
+            const grandTotal = itemsSubtotal + shippingCost;
 
           return (
             <div key={order.id} className="a4-page">
@@ -707,7 +730,7 @@ export default function AdminEnvios() {
 
             </div>
           );
-        })}
+        })()}
       </div>
 
     </div>
