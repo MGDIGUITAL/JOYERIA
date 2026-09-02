@@ -118,19 +118,12 @@ export default function AdminEnvios() {
   const shippedDispatches = orders.filter(o => o.status === 'Enviado');
 
   const handlePrintAll = (ordersToPrint?: any[]) => {
-    const targetOrders = (ordersToPrint && ordersToPrint.length > 0) ? ordersToPrint : pendingDispatches;
-    if (!targetOrders || targetOrders.length === 0) {
-      alert('No hay órdenes pendientes para generar notas de despacho.');
-      return;
-    }
-    setPrintOrders(targetOrders);
-    window.print();
+    window.open('/admin/envios/imprimir', '_blank');
   };
 
   const handlePrintSingle = (order: any) => {
     if (!order) return;
-    setPrintOrders([order]);
-    window.print();
+    window.open(`/admin/envios/imprimir?id=${order.id}`, '_blank');
   };
 
   // Filter shippedDispatches based on timeframe selection

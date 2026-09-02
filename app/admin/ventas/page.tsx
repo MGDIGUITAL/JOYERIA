@@ -246,12 +246,14 @@ export default function VentasPage() {
               <p style={{ fontSize: '0.75rem', color: T.textMuted, marginTop: '8px' }}>Al ingresar el tracking, el cliente será notificado de su envío (próximamente).</p>
             </div>
             
-            <Link 
-              href="/admin/envios"
+            <a 
+              href={`/admin/envios/imprimir?id=${selectedOrder.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
               style={{ width: '100%', marginTop: '24px', background: T.primary, color: '#fff', border: 'none', padding: '12px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', display: 'flex', justifyContent: 'center', gap: '8px', alignItems: 'center', textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box' }}
             >
-              🖨 Imprimir Nota de Despacho A4 en Resumen de Envíos →
-            </Link>
+              🖨 Imprimir Nota de Despacho A4 de esta Orden →
+            </a>
           </div>
         )}
 
