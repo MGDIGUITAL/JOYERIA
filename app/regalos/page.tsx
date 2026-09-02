@@ -234,7 +234,7 @@ export default async function RegalosPage() {
       <LuxuryPackaging />
       <Footer />
 
-      <a href="https://wa.me/569XXXXXXXX" target="_blank" rel="noopener noreferrer" style={{
+      <a href="https://wa.me/56951555556?text=Hola%20Amora%20Jewelry%2C%20quisiera%20consultar%20por%20sus%20piezas%20de%20regalo" target="_blank" rel="noopener noreferrer" style={{
         position: 'fixed', bottom: 30, right: 30, zIndex: 1000,
         width: 56, height: 56, borderRadius: '50%',
         background: '#FFFFFF', border: '1px solid #E3DBCC',

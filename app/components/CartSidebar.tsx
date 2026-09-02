@@ -126,17 +126,44 @@ export default function CartSidebar() {
             <p style={{ fontSize: '0.75rem', color: S.muted, marginBottom: 20 }}>
               Los impuestos y gastos de envío se calcularán en el checkout.
             </p>
-            <Link href="/checkout" onClick={closeCart} style={{
-              width: '100%', padding: '16px', background: S.obsidian, color: S.offWhite, 
-              border: 'none', cursor: 'pointer', fontFamily: 'Cinzel, serif', fontSize: '0.8rem',
-              letterSpacing: '0.12em', textTransform: 'uppercase', transition: 'background 0.3s',
-              display: 'block', textAlign: 'center', textDecoration: 'none'
-            }}
-            onMouseEnter={e => e.currentTarget.style.background = S.charcoal}
-            onMouseLeave={e => e.currentTarget.style.background = S.obsidian}
-            >
-              Ir a Pagar
-            </Link>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <Link href="/checkout" onClick={closeCart} style={{
+                width: '100%', padding: '16px', background: S.obsidian, color: S.offWhite, 
+                border: 'none', cursor: 'pointer', fontFamily: 'Cinzel, serif', fontSize: '0.8rem',
+                letterSpacing: '0.12em', textTransform: 'uppercase', transition: 'background 0.3s',
+                display: 'block', textAlign: 'center', textDecoration: 'none'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = S.charcoal}
+              onMouseLeave={e => e.currentTarget.style.background = S.obsidian}
+              >
+                Ir a Pagar (Web)
+              </Link>
+
+              {(() => {
+                const messageText = `Hola Amora Jewelry, quisiera realizar el siguiente pedido por WhatsApp:\n\n` +
+                  cart.map(item => `• ${item.title}${item.size ? ` (Talla: ${item.size})` : ''} - Cantidad: ${item.quantity} - $${(item.price * item.quantity).toLocaleString('es-CL')}`).join('\n') +
+                  `\n\nTotal: $${cartTotal.toLocaleString('es-CL')}\n\nQuedo atento a la confirmación para el envío.`;
+                const whatsappUrl = `https://wa.me/56951555556?text=${encodeURIComponent(messageText)}`;
+
+                return (
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={closeCart}
+                    style={{
+                      width: '100%', padding: '14px', background: '#25D366', color: '#FFFFFF',
+                      border: 'none', cursor: 'pointer', fontFamily: 'Cinzel, serif', fontSize: '0.78rem',
+                      letterSpacing: '0.1em', textTransform: 'uppercase', transition: 'opacity 0.3s',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, textDecoration: 'none',
+                      boxShadow: '0 4px 12px rgba(37,211,102,0.2)'
+                    }}
+                  >
+                    <span>💬</span> Pedir por WhatsApp
+                  </a>
+                );
+              })()}
+            </div>
           </div>
         )}
       </div>

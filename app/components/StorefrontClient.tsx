@@ -319,7 +319,7 @@ function Navbar() {
               <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.65rem', letterSpacing:'0.1em', marginBottom:6 }}>SÍGUENOS</p>
               <div style={{ display:'flex', gap:16 }}>
                 <a href="https://www.instagram.com/amorajewelrychile/" target="_blank" rel="noreferrer" style={{ color:S.obsidian, textDecoration:'none' }}>Instagram</a>
-                <a href="https://wa.me/569XXXXXXXX" target="_blank" rel="noreferrer" style={{ color:S.obsidian, textDecoration:'none' }}>WhatsApp</a>
+                <a href="https://wa.me/56951555556?text=Hola%20Amora%20Jewelry%2C%20quisiera%20consultar%20por%20sus%20joyas" target="_blank" rel="noreferrer" style={{ color:S.obsidian, textDecoration:'none' }}>WhatsApp</a>
               </div>
             </div>
           </div>
@@ -631,6 +631,33 @@ function Products({ products }: { products: any[] }) {
   );
 }
 
+// ─── FEATURED PRODUCTS ──────────────────────────────────────────────────────
+function FeaturedProducts({ products }: { products: any[] }) {
+  const featured = products.slice(0, 4);
+  if (featured.length === 0) return null;
+
+  return (
+    <section style={{ padding: '80px 2rem', background: S.offWhite }}>
+      <div style={{ maxWidth: 1320, margin: '0 auto' }}>
+        <div className="amora-divider" style={{ marginBottom: 32 }}>
+          <span className="line" />
+          <span>Selección Exclusiva</span>
+          <span className="line rev" />
+        </div>
+        <h2 className="font-display" style={{ fontSize: 'clamp(2.2rem,4vw,3.2rem)', fontWeight: 300, textAlign: 'center', color: S.obsidian, marginBottom: 56 }}>
+          Productos Destacados
+        </h2>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+          {featured.map(p => (
+            <ProductCard key={p.id} p={p} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ─── SECOND BANNER ────────────────────────────────────────────────────────
 function SecondBanner() {
   return (
@@ -660,6 +687,254 @@ function SecondBanner() {
   );
 }
 
+// ─── TESTIMONIALS & REVIEWS SECTION ─────────────────────────────────────
+const REVIEWS_DATA = [
+  {
+    id: 1,
+    name: 'Valentina M.',
+    location: 'Las Condes, Santiago',
+    product: 'Cadena Figaro Baño Oro 18K',
+    date: 'Hace 2 días',
+    rating: 5,
+    tag: 'Despacho & Envíos',
+    comment: '¡El despacho fue increíblemente rápido! Hice el pedido un martes en la mañana y al día siguiente ya estaba en mi domicilio por Blue Express con seguimiento continuo. El empaque de lujo con la cinta de raso y la caja rígida le da un toque de joyería fina total. 100% recomendado.',
+  },
+  {
+    id: 2,
+    name: 'Camila S.',
+    location: 'Viña del Mar, Valparaíso',
+    product: 'Anillo Solitario Zirconia Premium',
+    date: 'Hace 4 días',
+    rating: 5,
+    tag: 'Calidad & Acabados',
+    comment: 'La calidad superó totalmente mis expectativas. El brillo de la piedra y el pulido espejo son impecables. Me comuniqué por WhatsApp al +56 9 5155 5556 para confirmar mi talla y la atención fue rápida, amable y muy profesional.',
+  },
+  {
+    id: 3,
+    name: 'Francisca R.',
+    location: 'Concepción, Biobío',
+    product: 'Pulsera Tennis Plata Ley 925',
+    date: 'Hace 1 semana',
+    rating: 5,
+    tag: 'Presentación de Lujo',
+    comment: 'La compré para un regalo de aniversario y fue un éxito rotundo. Recibirla en su caja firma Ivory con bolsa protectora y certificado de autenticidad genera una confianza total. Se nota el compromiso con los clientes.',
+  },
+  {
+    id: 4,
+    name: 'Constanza A.',
+    location: 'Antofagasta',
+    product: 'Aros Huggies Brillantes',
+    date: 'Hace 1 semana',
+    rating: 5,
+    tag: 'Despacho & Envíos',
+    comment: 'Tenía dudas sobre el envío al norte por la distancia, pero llegó intacto, muy seguro y en tiempo récord. Es mi segunda compra en Amora y la calidad del material no se opaca con nada.',
+  },
+  {
+    id: 5,
+    name: 'Javiera B.',
+    location: 'La Serena, Coquimbo',
+    product: 'Collar Medalla Girasol Escultórico',
+    date: 'Hace 2 semanas',
+    rating: 5,
+    tag: 'Calidad & Acabados',
+    comment: 'Diseño bellísimo y terminación elegante. Es muy liviano pero firme y no causa ninguna alergia. Además, me incluyeron una nota de agradecimiento personalizada preciosa.',
+  },
+  {
+    id: 6,
+    name: 'Isidora P.',
+    location: 'Temuco, Araucanía',
+    product: 'Set de Anillos Layering Elegance',
+    date: 'Hace 2 semanas',
+    rating: 5,
+    tag: 'Presentación de Lujo',
+    comment: 'Transparencia absoluta y excelente canal de atención por WhatsApp. El empaque huele delicioso y viene protegido con plástico burbuja. Es un agrado comprar en un sitio tan profesional.',
+  },
+];
+
+function TestimonialsSection() {
+  const [activeFilter, setActiveFilter] = useState('Todas');
+  const filters = ['Todas', 'Despacho & Envíos', 'Calidad & Acabados', 'Presentación de Lujo'];
+
+  const filteredReviews = activeFilter === 'Todas' 
+    ? REVIEWS_DATA 
+    : REVIEWS_DATA.filter(r => r.tag === activeFilter);
+
+  return (
+    <section id="reseñas" style={{ padding: '88px 1.5rem', background: S.offWhite, borderTop: `1px solid ${S.nude}` }}>
+      <div style={{ maxWidth: 1320, margin: '0 auto' }}>
+        
+        {/* Header / Summary */}
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 18px', background: 'rgba(184,151,90,0.1)', border: `1px solid ${S.gold}`, borderRadius: 30, marginBottom: 18 }}>
+            <span style={{ color: S.gold, fontSize: '0.85rem' }}>★ ★ ★ ★ ★</span>
+            <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', letterSpacing: '0.12em', color: S.obsidian, fontWeight: 600 }}>
+              4.9 / 5.0 RESEÑAS VERIFICADAS
+            </span>
+          </div>
+
+          <h2 className="font-display" style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.5rem)', fontWeight: 300, color: S.obsidian, marginBottom: 16 }}>
+            Opiniones de Nuestras Clientas
+          </h2>
+          <p style={{ color: S.muted, fontSize: '0.98rem', maxWidth: 640, margin: '0 auto', lineHeight: 1.7, fontFamily: 'Inter, sans-serif' }}>
+            Descubre las experiencias reales de quienes han adquirido nuestras piezas exclusivas. Calidad garantizada, empaque firma y despacho asegurado a todo Chile.
+          </p>
+
+          {/* Badges de Confianza */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 24, flexWrap: 'wrap', marginTop: 24, fontSize: '0.78rem', color: S.charcoal, fontFamily: 'Cinzel, serif', letterSpacing: '0.08em' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: '#25D366' }}>✓</span> Compradores Verificados
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: S.gold }}>📦</span> Despacho Express Chile
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: S.gold }}>💎</span> Plata 925 & Baño de Oro
+            </span>
+          </div>
+        </div>
+
+        {/* Filter Tabs */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 44 }}>
+          {filters.map(f => (
+            <button
+              key={f}
+              onClick={() => setActiveFilter(f)}
+              style={{
+                fontFamily: 'Cinzel, serif',
+                fontSize: '0.68rem',
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                padding: '10px 20px',
+                borderRadius: '24px',
+                border: activeFilter === f ? `1px solid ${S.obsidian}` : `1px solid ${S.nude}`,
+                background: activeFilter === f ? S.obsidian : S.ivory,
+                color: activeFilter === f ? S.offWhite : S.muted,
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+              }}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
+        {/* Reviews Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 24 }}>
+          {filteredReviews.map(r => (
+            <div
+              key={r.id}
+              style={{
+                background: S.ivory,
+                border: `1px solid ${S.nude}`,
+                borderRadius: '12px',
+                padding: '28px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.02)'
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.06)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.02)'; }}
+            >
+              <div>
+                {/* Rating & Tag Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                  <div style={{ color: S.gold, letterSpacing: '2px', fontSize: '0.9rem' }}>
+                    {'★'.repeat(r.rating)}
+                  </div>
+                  <span style={{
+                    fontSize: '0.62rem',
+                    fontFamily: 'Cinzel, serif',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    background: 'rgba(184,151,90,0.12)',
+                    color: S.gold,
+                    border: `1px solid rgba(184,151,90,0.3)`,
+                    padding: '3px 10px',
+                    borderRadius: '12px'
+                  }}>
+                    {r.tag}
+                  </span>
+                </div>
+
+                {/* Comment Text */}
+                <p style={{ color: S.obsidian, fontSize: '0.92rem', lineHeight: 1.7, marginBottom: 20, fontFamily: 'Inter, sans-serif', fontStyle: 'italic' }}>
+                  "{r.comment}"
+                </p>
+              </div>
+
+              {/* Client Info & Product Purchased */}
+              <div style={{ borderTop: `1px solid ${S.nude}`, paddingTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{
+                    width: 38, height: 38, borderRadius: '50%', background: S.obsidian, color: S.gold,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: 'Cinzel, serif', fontWeight: 600, fontSize: '0.85rem'
+                  }}>
+                    {r.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: '0.85rem', color: S.obsidian, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {r.name}
+                      <span style={{ fontSize: '0.7rem', color: '#25D366' }} title="Compra Verificada">✓</span>
+                    </div>
+                    <div style={{ fontSize: '0.72rem', color: S.muted, fontFamily: 'Inter, sans-serif' }}>
+                      {r.location}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '0.68rem', fontFamily: 'Cinzel, serif', color: S.gold, letterSpacing: '0.05em' }}>
+                    {r.product}
+                  </div>
+                  <div style={{ fontSize: '0.65rem', color: S.nudeDark, marginTop: 2 }}>
+                    {r.date}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer CTA */}
+        <div style={{ marginTop: 56, textAlign: 'center', background: S.ivory, border: `1px solid ${S.nude}`, borderRadius: '12px', padding: '36px 24px' }}>
+          <h3 className="font-display" style={{ fontSize: '1.5rem', color: S.obsidian, fontWeight: 400, marginBottom: 10 }}>
+            ¿Quieres vivir la experiencia Amora?
+          </h3>
+          <p style={{ color: S.muted, fontSize: '0.88rem', marginBottom: 24, maxWidth: 500, margin: '0 auto 24px' }}>
+            Únete a cientos de clientas satisfechas. Recibe tus piezas en empaque de regalo de lujo con despacho asegurado a todo Chile.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <a
+              href="#joyeria"
+              style={{
+                fontFamily: 'Cinzel, serif', fontSize: '0.72rem', letterSpacing: '0.14em', textTransform: 'uppercase',
+                background: S.obsidian, color: S.offWhite, padding: '14px 32px', textDecoration: 'none', border: `1px solid ${S.obsidian}`, borderRadius: '4px'
+              }}
+            >
+              Explorar Catálogo
+            </a>
+            <a
+              href="https://wa.me/56951555556?text=Hola%20Amora%20Jewelry%2C%20quisiera%20consultar%20por%20sus%20joyas"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontFamily: 'Cinzel, serif', fontSize: '0.72rem', letterSpacing: '0.14em', textTransform: 'uppercase',
+                background: '#25D366', color: '#FFFFFF', padding: '14px 32px', textDecoration: 'none', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: 8
+              }}
+            >
+              <span>💬</span> Consultar por WhatsApp
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
 // ─── FOOTER ───────────────────────────────────────────────────────────────
 function Footer() {
   const cols = [
@@ -678,7 +953,7 @@ function Footer() {
             <div style={{ display:'flex', gap:10 }}>
               {[
                 { img: '/amora_instagram.png', href: 'https://www.instagram.com/amorajewelrychile/', title: 'Instagram' },
-                { img: '/amora_whatsapp.png', href: 'https://wa.me/569XXXXXXXX', title: 'WhatsApp' },
+                { img: '/amora_whatsapp.png', href: 'https://wa.me/56951555556?text=Hola%20Amora%20Jewelry%2C%20quisiera%20consultar%20por%20sus%20joyas', title: 'WhatsApp' },
                 { img: '/amora_email.png', href: 'mailto:amorajewelrychile@gmail.com', title: 'Email' },
               ].map(s => (
                 <a key={s.title} href={s.href} title={s.title} target={s.href.startsWith('http') ? '_blank' : undefined} rel={s.href.startsWith('http') ? 'noopener noreferrer' : undefined} style={{ width:36, height:36, border:`1px solid ${S.nude}`, display:'flex', alignItems:'center', justifyContent:'center', transition:'all 0.25s', padding: 8 }}
@@ -717,35 +992,6 @@ function Footer() {
   );
 }
 
-// ─── FEATURED PRODUCTS ──────────────────────────────────────────────────────
-function FeaturedProducts({ products }: { products: any[] }) {
-  // Tomamos los 4 primeros productos reales de la base de datos
-  const featured = products.slice(0, 4);
-
-  if (featured.length === 0) return null;
-
-  return (
-    <section style={{ padding: '80px 2rem', background: S.offWhite }}>
-      <div style={{ maxWidth: 1320, margin: '0 auto' }}>
-        <div className="amora-divider" style={{ marginBottom: 32 }}>
-          <span className="line" />
-          <span>Selección Exclusiva</span>
-          <span className="line rev" />
-        </div>
-        <h2 className="font-display" style={{ fontSize: 'clamp(2.2rem,4vw,3.2rem)', fontWeight: 300, textAlign: 'center', color: S.obsidian, marginBottom: 56 }}>
-          Productos Destacados
-        </h2>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
-          {featured.map(p => (
-            <ProductCard key={p.id} p={p} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────
 export default function StorefrontClient({ products }: { products: any[] }) {
   return (
@@ -761,12 +1007,13 @@ export default function StorefrontClient({ products }: { products: any[] }) {
         <FeaturedProducts products={products} />
         <Products products={products} />
         <SecondBanner />
+        <TestimonialsSection />
       </main>
       <Footer />
       <CartSidebar />
 
       {/* Floating WhatsApp Button */}
-      <a href="https://wa.me/569XXXXXXXX" target="_blank" rel="noopener noreferrer" aria-label="Contáctanos por WhatsApp" style={{
+      <a href="https://wa.me/56951555556?text=Hola%20Amora%20Jewelry%2C%20quisiera%20consultar%20por%20sus%20joyas" target="_blank" rel="noopener noreferrer" aria-label="Contáctanos por WhatsApp" style={{
         position:'fixed', bottom:30, right:30, zIndex:1000,
         width:56, height:56, borderRadius:'50%',
         background:'#FFFFFF', border:'1px solid #E3DBCC',

@@ -249,29 +249,63 @@ export default function ProductDetailClient({ product }: { product: any }) {
           )}
 
           {/* Botón Añadir a la Bolsa */}
-          <button 
-            className="pdetail-add-btn"
-            onClick={handleAddToCart}
-            style={{
-              padding: '16px 24px',
-              backgroundColor: S.obsidian,
-              color: S.offWhite,
-              border: 'none',
-              borderRadius: '8px',
-              fontFamily: 'Cinzel, serif',
-              letterSpacing: '2px',
-              fontSize: '0.88rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              width: '100%',
-              boxShadow: '0 4px 16px rgba(16,16,16,0.15)'
-            }}
-            onMouseOver={e => e.currentTarget.style.backgroundColor = S.charcoal}
-            onMouseOut={e => e.currentTarget.style.backgroundColor = S.obsidian}
-          >
-            AÑADIR A LA BOLSA
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <button 
+              className="pdetail-add-btn"
+              onClick={handleAddToCart}
+              style={{
+                padding: '16px 24px',
+                backgroundColor: S.obsidian,
+                color: S.offWhite,
+                border: 'none',
+                borderRadius: '8px',
+                fontFamily: 'Cinzel, serif',
+                letterSpacing: '2px',
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                width: '100%',
+                boxShadow: '0 4px 16px rgba(16,16,16,0.15)'
+              }}
+              onMouseOver={e => e.currentTarget.style.backgroundColor = S.charcoal}
+              onMouseOut={e => e.currentTarget.style.backgroundColor = S.obsidian}
+            >
+              AÑADIR A LA BOLSA
+            </button>
+
+            <a
+              href={`https://wa.me/56951555556?text=${encodeURIComponent(
+                `Hola Amora Jewelry, me gustaría pedir el producto "${product.title}"${
+                  selectedSize ? ` (Talla: ${selectedSize})` : ''
+                } - $${product.sale_price?.toLocaleString('es-CL')}`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                padding: '14px 24px',
+                backgroundColor: '#25D366',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: '8px',
+                fontFamily: 'Cinzel, serif',
+                letterSpacing: '1.5px',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+                textDecoration: 'none',
+                boxShadow: '0 4px 14px rgba(37,211,102,0.25)'
+              }}
+            >
+              <span style={{ fontSize: '1.1rem' }}>💬</span> PEDIR VÍA WHATSAPP
+            </a>
+          </div>
           
           <div style={{ marginTop: '28px', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8rem', color: S.muted, background: 'rgba(184,151,90,0.06)', padding: '16px', borderRadius: '8px', border: `1px solid rgba(184,151,90,0.2)` }}>
             <p style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>✨ <strong>Envío asegurado</strong> a todo Chile</p>
