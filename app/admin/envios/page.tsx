@@ -1,7 +1,5 @@
 'use client';
-export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabase/client';
 import Image from 'next/image';
 
 const S = {
@@ -25,6 +23,7 @@ export default function AdminEnvios() {
   const [orders, setOrders] = useState<any[]>([]);
   const [filter, setFilter] = useState<'Pendiente' | 'Pagado' | 'Enviado'>('Pagado');
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [printOrders, setPrintOrders] = useState<any[] | null>(null);
 
   // Timeframe / monthly history filters
@@ -38,6 +37,7 @@ export default function AdminEnvios() {
 
   const fetchOrders = async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const res = await fetch(`/api/admin/orders?t=${Date.now()}`, {
         cache: 'no-store',
@@ -46,12 +46,21 @@ export default function AdminEnvios() {
           'Pragma': 'no-cache'
         }
       });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        setFetchError(`Error del servidor (${res.status}): ${errData.error || 'Verifique SUPABASE_SERVICE_ROLE_KEY en Vercel'}`);
+        setLoading(false);
+        return;
+      }
       const data = await res.json();
       if (data.orders) {
         setOrders(data.orders);
+      } else if (data.error) {
+        setFetchError(`Error de base de datos: ${data.error}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching orders:', err);
+      setFetchError(`Error de conexión: ${err.message}. Verifique que las variables de entorno estén configuradas en Vercel.`);
     }
     setLoading(false);
   };
@@ -401,10 +410,28 @@ export default function AdminEnvios() {
         )}
 
         {loading ? (
-          <p>Cargando órdenes de envío...</p>
+          <div style={{ padding: 40, textAlign: 'center', color: S.muted }}>
+            <p style={{ fontSize: '1rem', marginBottom: 8 }}>⏳ Cargando órdenes de envío...</p>
+          </div>
+        ) : fetchError ? (
+          <div style={{ padding: 32, background: '#FFF3CD', border: '1px solid #FFCA28', borderRadius: 8, textAlign: 'center' }}>
+            <p style={{ color: '#856404', fontWeight: 700, marginBottom: 8 }}>⚠️ Error al cargar las órdenes</p>
+            <p style={{ color: '#856404', fontSize: '0.9rem', marginBottom: 16 }}>{fetchError}</p>
+            <button
+              onClick={fetchOrders}
+              style={{ background: S.obsidian, color: S.gold, border: 'none', padding: '10px 24px', borderRadius: 6, fontWeight: 700, cursor: 'pointer' }}
+            >
+              🔄 Reintentar
+            </button>
+          </div>
         ) : filteredOrders.length === 0 ? (
           <div style={{ padding: 40, background: S.offWhite, border: `1px dashed ${S.nudeDark}`, textAlign: 'center', color: S.muted, borderRadius: 8 }}>
-            No hay órdenes en esta categoría.
+            <p style={{ marginBottom: 12 }}>
+              {filter === 'Pagado' ? '✅ No hay órdenes pendientes de despacho.' : '📭 No hay historial de envíos en este período.'}
+            </p>
+            <button onClick={fetchOrders} style={{ background: 'transparent', border: `1px solid ${S.nudeDark}`, padding: '8px 20px', borderRadius: 4, cursor: 'pointer', color: S.muted, fontSize: '0.85rem' }}>
+              🔄 Actualizar
+            </button>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>

@@ -24,7 +24,7 @@ export default async function BalancePage() {
   const netRevenueProducts = totalRevenue - totalShippingCharged;
 
   // 2. Fetch Order Items + Products para calcular COGS (Cost of Goods Sold)
-  const { data: orderItems } = await supabaseAdmin.from('order_items').select('*, product_id');
+  const { data: orderItems } = await supabaseAdmin.from('order_items').select('order_id, product_id, quantity');
   const { data: products } = await supabaseAdmin.from('products').select('id, cost_price');
   
   let totalCogs = 0;

@@ -1,8 +1,6 @@
 'use client';
-export const dynamic = 'force-dynamic';
 import React, { useState, useEffect } from 'react';
 import { T } from '../components/shared';
-import { supabase } from '@/lib/supabase/client';
 
 export default function VentasPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -54,11 +52,22 @@ export default function VentasPage() {
   };
 
   const saveTracking = async (id: string) => {
-    const { error } = await supabase.from('orders').update({ tracking_number: trackingInput }).eq('id', id);
-    if (!error) {
-      setOrders(orders.map(o => o.id === id ? { ...o, tracking_number: trackingInput } : o));
-      setSelectedOrder({ ...selectedOrder, tracking_number: trackingInput });
-      alert('Tracking guardado con éxito');
+    try {
+      const res = await fetch('/api/admin/orders/update-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: id, trackingNumber: trackingInput, status: orders.find(o => o.id === id)?.status || 'Enviado' }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setOrders(orders.map(o => o.id === id ? { ...o, tracking_number: trackingInput } : o));
+        if (selectedOrder) setSelectedOrder({ ...selectedOrder, tracking_number: trackingInput });
+        alert('Tracking guardado con éxito');
+      } else {
+        alert('Error guardando tracking: ' + (data.error || 'Error desconocido'));
+      }
+    } catch (err: any) {
+      alert('Error de conexión: ' + err.message);
     }
   };
 
