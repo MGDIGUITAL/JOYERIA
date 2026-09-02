@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { useCart } from './CartContext';
 import CartSidebar from './CartSidebar';
@@ -933,62 +933,253 @@ function TestimonialsSection() {
   );
 }
 
-// ─── FOOTER ───────────────────────────────────────────────────────────────
-function Footer() {
-  const cols = [
-    { t:'Joyería',     ls:['Anillos','Cadenas','Pulseras','Aros'] },
-    { t:'Ayuda',       ls:['Cómo comprar','Envíos','Cambios','Contacto'] },
-  ];
-  return (
-    <footer style={{ background:S.offWhite, borderTop:`1px solid ${S.nude}`, paddingTop:72 }}>
-      <div style={{ maxWidth:1320, margin:'0 auto', padding:'0 2rem' }}>
-        <div style={{ display:'grid', gridTemplateColumns:'280px repeat(2,1fr)', gap:48, paddingBottom:56, borderBottom:`1px solid ${S.nude}` }}>
-          <div>
-            <Image src="/Amora_Jewelry_logo_header_480x114.png" alt="Amora Jewelry" width={140} height={33} style={{ objectFit:'contain', marginBottom:20 }} />
-            <p style={{ color:S.muted, fontSize:'0.82rem', lineHeight:1.75, marginBottom:24 }}>
-              Joyería premium diseñada para mujeres que aprecian el lujo en cada detalle.
-            </p>
-            <div style={{ display:'flex', gap:10 }}>
-              {[
-                { img: '/amora_instagram.png', href: 'https://www.instagram.com/amorajewelrychile/', title: 'Instagram' },
-                { img: '/amora_whatsapp.png', href: 'https://wa.me/56951555556?text=Hola%20Amora%20Jewelry%2C%20quisiera%20consultar%20por%20sus%20joyas', title: 'WhatsApp' },
-                { img: '/amora_email.png', href: 'mailto:amorajewelrychile@gmail.com', title: 'Email' },
-              ].map(s => (
-                <a key={s.title} href={s.href} title={s.title} target={s.href.startsWith('http') ? '_blank' : undefined} rel={s.href.startsWith('http') ? 'noopener noreferrer' : undefined} style={{ width:36, height:36, border:`1px solid ${S.nude}`, display:'flex', alignItems:'center', justifyContent:'center', transition:'all 0.25s', padding: 8 }}
-                  onMouseEnter={e=>{ e.currentTarget.style.background=S.nude; }}
-                  onMouseLeave={e=>{ e.currentTarget.style.background='transparent'; }}
-                >
-                  <div style={{ position:'relative', width:'100%', height:'100%' }}>
-                    <Image src={s.img} alt={s.title} fill style={{ objectFit:'contain' }} />
-                  </div>
-                </a>
-              ))}
-            </div>
-          </div>
-          {cols.map(col => (
-            <div key={col.t}>
-              <div style={{ fontFamily:'Cinzel,serif', color:S.obsidian, fontSize:'0.66rem', letterSpacing:'0.16em', textTransform:'uppercase', marginBottom:20 }}>{col.t}</div>
-              {col.ls.map(l => (
-                <a key={l} href="#" style={{ display:'block', color:S.muted, fontSize:'0.85rem', textDecoration:'none', marginBottom:12, transition:'color 0.2s' }}
-                  onMouseEnter={e=>(e.currentTarget.style.color=S.obsidian)}
-                  onMouseLeave={e=>(e.currentTarget.style.color=S.muted)}
-                >{l}</a>
-              ))}
+// ─── FOOTER HELP MODALS ───────────────────────────────────────────────────
+const MODAL_CONTENT: Record<string, { title: string; icon: string; body: React.ReactNode }> = {
+  'Cómo comprar': {
+    title: 'Cómo Comprar en Amora Jewelry',
+    icon: '🛍️',
+    body: (
+      <div>
+        <p style={{ marginBottom: 16, lineHeight: 1.8 }}>En <strong>Amora Jewelry</strong> tienes <strong>dos formas sencillas</strong> de realizar tu compra:</p>
+        <div style={{ marginBottom: 20, padding: '16px 20px', background: '#f9f7f4', borderLeft: '3px solid #B8975A', borderRadius: 4 }}>
+          <strong style={{ display: 'block', marginBottom: 8, fontFamily: 'Cinzel,serif', fontSize: '0.75rem', letterSpacing: '0.1em' }}>💬 VÍA WHATSAPP</strong>
+          <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: 1.75 }}>Escríbenos directamente al <strong>+56 9 5155 5556</strong>, cuéntanos qué pieza te interesa y te guiamos en el proceso de compra de forma personalizada. Aceptamos <strong>transferencia bancaria, Mercado Pago y débito/crédito</strong>.</p>
+        </div>
+        <div style={{ marginBottom: 20, padding: '16px 20px', background: '#f9f7f4', borderLeft: '3px solid #B8975A', borderRadius: 4 }}>
+          <strong style={{ display: 'block', marginBottom: 8, fontFamily: 'Cinzel,serif', fontSize: '0.75rem', letterSpacing: '0.1em' }}>🌐 VÍA SITIO WEB</strong>
+          <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: 1.75 }}>Selecciona la pieza que deseas, elige tu talla si corresponde, agrégala al carrito y sigue el proceso de pago seguro en nuestra plataforma. Tu orden quedará confirmada vía correo electrónico.</p>
+        </div>
+        <p style={{ fontSize: '0.8rem', color: '#9A8C7E', lineHeight: 1.7 }}>
+          ✅ De acuerdo a la <strong>Ley 19.496 del Consumidor (Chile)</strong>, tienes derecho a recibir información clara y veraz sobre los productos, precios y condiciones de compra antes de finalizar tu pedido.
+        </p>
+      </div>
+    ),
+  },
+  'Envíos': {
+    title: 'Política de Envíos',
+    icon: '📦',
+    body: (
+      <div>
+        <p style={{ marginBottom: 16, lineHeight: 1.8 }}>En <strong>Amora Jewelry</strong> gestionamos cada despacho con nuestro equipo logístico para garantizarte el mejor servicio.</p>
+        <div style={{ display: 'grid', gap: 12, marginBottom: 20 }}>
+          {[
+            { icon: '🚚', t: 'Cobertura nacional', d: 'Despachamos a todo Chile: Región Metropolitana, regiones del norte y sur del país, incluidas zonas extremas (Arica–Punta Arenas).' },
+            { icon: '⏱️', t: 'Plazo de entrega', d: 'RM: 1–3 días hábiles. Regiones: 3–7 días hábiles según destino. Zonas extremas: hasta 10 días hábiles.' },
+            { icon: '📍', t: 'Seguimiento', d: 'Una vez despachado tu pedido, recibirás el número de seguimiento por WhatsApp o correo para que puedas rastrearlo en tiempo real.' },
+            { icon: '🎁', t: 'Empaque de lujo', d: 'Todos los pedidos se despachan en caja rígida con cinta de raso negra y bolsa tissue, lista para regalo sin costo adicional.' },
+          ].map(i => (
+            <div key={i.t} style={{ padding: '12px 16px', background: '#f9f7f4', borderRadius: 6, display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{i.icon}</span>
+              <div>
+                <strong style={{ display: 'block', fontSize: '0.82rem', marginBottom: 4 }}>{i.t}</strong>
+                <span style={{ fontSize: '0.82rem', color: '#6B5F54', lineHeight: 1.65 }}>{i.d}</span>
+              </div>
             </div>
           ))}
         </div>
-        <div style={{ padding:'24px 0', display:'flex', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
-          <span style={{ color:S.nudeDark, fontSize:'0.7rem', fontFamily:'Cinzel,serif', letterSpacing:'0.08em' }}>© 2024 AMORA JEWELRY. TODOS LOS DERECHOS RESERVADOS.</span>
-          <div style={{ display:'flex', gap:20 }}>
-            {['Privacidad','Términos','Cookies'].map(t => (
-              <a key={t} href="#" style={{ color:S.nudeDark, fontSize:'0.7rem', textDecoration:'none', fontFamily:'Cinzel,serif' }}>{t}</a>
-            ))}
+        <p style={{ fontSize: '0.8rem', color: '#9A8C7E', lineHeight: 1.7 }}>
+          ✅ Según el <strong>Artículo 12 de la Ley 19.496</strong>, estás en tu derecho de recibir el producto en las condiciones y plazos ofrecidos. Ante cualquier atraso injustificado, puedes contactarnos para gestionar una solución.
+        </p>
+      </div>
+    ),
+  },
+  'Cambios': {
+    title: 'Política de Cambios y Devoluciones',
+    icon: '🔄',
+    body: (
+      <div>
+        <p style={{ marginBottom: 16, lineHeight: 1.8 }}>Tu satisfacción es nuestra prioridad. Si tu pedido llegó con algún <strong>daño de fábrica o error de despacho</strong>, lo gestionamos sin costo adicional.</p>
+        <div style={{ marginBottom: 20, padding: '16px 20px', background: '#f9f7f4', borderLeft: '3px solid #4CAF50', borderRadius: 4 }}>
+          <strong style={{ display: 'block', marginBottom: 8, fontFamily: 'Cinzel,serif', fontSize: '0.75rem', letterSpacing: '0.1em', color: '#2e7d32' }}>✅ CAUSALES ACEPTADAS</strong>
+          <ul style={{ margin: 0, paddingLeft: 18, fontSize: '0.88rem', lineHeight: 1.9 }}>
+            <li>Producto con daño de fábrica o defecto de manufactura</li>
+            <li>Pieza distinta a la solicitada (error en el despacho)</li>
+            <li>Producto con daño causado por la logística de transporte</li>
+          </ul>
+        </div>
+        <div style={{ marginBottom: 20, padding: '16px 20px', background: '#f9f7f4', borderLeft: '3px solid #B8975A', borderRadius: 4 }}>
+          <strong style={{ display: 'block', marginBottom: 8, fontFamily: 'Cinzel,serif', fontSize: '0.75rem', letterSpacing: '0.1em' }}>📋 PROCEDIMIENTO</strong>
+          <ol style={{ margin: 0, paddingLeft: 18, fontSize: '0.88rem', lineHeight: 1.9 }}>
+            <li>Contáctanos dentro de <strong>5 días hábiles</strong> desde la recepción</li>
+            <li>Envíanos fotografías del producto y empaque al correo <strong>amorajewelrychile@gmail.com</strong></li>
+            <li>Nuestro equipo evaluará el caso y coordinará el retiro sin costo</li>
+            <li>Reponemos el producto o realizamos devolución según disponibilidad</li>
+          </ol>
+        </div>
+        <p style={{ fontSize: '0.8rem', color: '#9A8C7E', lineHeight: 1.7 }}>
+          ✅ Conforme al <strong>Artículo 19 y 20 de la Ley 19.496 de Protección al Consumidor</strong>, tienes derecho a la reparación, reposición o devolución del precio pagado cuando el producto presente defectos o no corresponda a lo ofrecido.
+        </p>
+      </div>
+    ),
+  },
+  'Contacto': {
+    title: 'Canales de Contacto Oficial',
+    icon: '📞',
+    body: (
+      <div>
+        <p style={{ marginBottom: 20, lineHeight: 1.8 }}>Estamos disponibles para atenderte por <strong>tres canales oficiales</strong>. Elige el que más te acomode:</p>
+        <div style={{ display: 'grid', gap: 12, marginBottom: 20 }}>
+          <a href="https://wa.me/56951555556?text=Hola%20Amora%20Jewelry%2C%20quisiera%20consultar" target="_blank" rel="noopener noreferrer" style={{ padding: '16px 20px', background: '#f1fdf4', border: '1px solid #c8e6c9', borderRadius: 8, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 14, transition: 'transform 0.2s' }}>
+            <span style={{ fontSize: '1.8rem' }}>💬</span>
+            <div>
+              <strong style={{ display: 'block', color: '#1b5e20', fontSize: '0.88rem' }}>WhatsApp / Fono</strong>
+              <span style={{ color: '#2e7d32', fontSize: '0.85rem' }}>+56 9 5155 5556 — Atención L–S 10:00 a 19:00 hrs</span>
+            </div>
+            <span style={{ marginLeft: 'auto', color: '#4CAF50', fontSize: '0.75rem', fontFamily: 'Cinzel,serif' }}>ESCRIBIR →</span>
+          </a>
+          <a href="mailto:amorajewelrychile@gmail.com?subject=Consulta%20Amora%20Jewelry" style={{ padding: '16px 20px', background: '#fff8e1', border: '1px solid #ffe082', borderRadius: 8, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 14, transition: 'transform 0.2s' }}>
+            <span style={{ fontSize: '1.8rem' }}>✉️</span>
+            <div>
+              <strong style={{ display: 'block', color: '#5c4a00', fontSize: '0.88rem' }}>Correo Electrónico</strong>
+              <span style={{ color: '#7a6200', fontSize: '0.85rem' }}>amorajewelrychile@gmail.com — Respuesta en 24 hrs hábiles</span>
+            </div>
+            <span style={{ marginLeft: 'auto', color: '#F9A825', fontSize: '0.75rem', fontFamily: 'Cinzel,serif' }}>ENVIAR →</span>
+          </a>
+          <a href="https://www.instagram.com/amorajewelrychile/" target="_blank" rel="noopener noreferrer" style={{ padding: '16px 20px', background: '#fce4ec', border: '1px solid #f48fb1', borderRadius: 8, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 14, transition: 'transform 0.2s' }}>
+            <span style={{ fontSize: '1.8rem' }}>📸</span>
+            <div>
+              <strong style={{ display: 'block', color: '#880e4f', fontSize: '0.88rem' }}>Instagram</strong>
+              <span style={{ color: '#ad1457', fontSize: '0.85rem' }}>@amorajewelrychile — DM disponible las 24 hrs</span>
+            </div>
+            <span style={{ marginLeft: 'auto', color: '#e91e63', fontSize: '0.75rem', fontFamily: 'Cinzel,serif' }}>SEGUIR →</span>
+          </a>
+        </div>
+        <p style={{ fontSize: '0.8rem', color: '#9A8C7E', lineHeight: 1.7 }}>
+          ✅ Según el <strong>Artículo 3 letra b) de la Ley 19.496</strong>, tienes derecho a recibir una atención honesta, oportuna y sin discriminación arbitraria. Nuestro equipo se compromete a responder toda consulta dentro del horario establecido.
+        </p>
+      </div>
+    ),
+  },
+};
+
+// ─── FOOTER ───────────────────────────────────────────────────────────────
+function Footer() {
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const modal = activeModal ? MODAL_CONTENT[activeModal] : null;
+
+  const cols = [
+    { t: 'Joyería', ls: [
+      { label: 'Anillos', href: '#joyeria' },
+      { label: 'Cadenas', href: '#joyeria' },
+      { label: 'Pulseras', href: '#joyeria' },
+      { label: 'Aros', href: '#joyeria' },
+    ]},
+    { t: 'Ayuda', ls: [
+      { label: 'Cómo comprar', modal: true },
+      { label: 'Envíos', modal: true },
+      { label: 'Cambios', modal: true },
+      { label: 'Contacto', modal: true },
+    ]},
+  ];
+
+  return (
+    <>
+      {/* ── MODAL OVERLAY ── */}
+      {modal && (
+        <div
+          onClick={() => setActiveModal(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(8,8,8,0.65)', backdropFilter: 'blur(6px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ background: '#FDFCF8', borderRadius: 12, maxWidth: 560, width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 24px 64px rgba(0,0,0,0.3)', animation: 'modalIn 0.25s ease' }}
+          >
+            {/* Modal Header */}
+            <div style={{ padding: '24px 28px 20px', borderBottom: '1px solid #E3DBCC', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: '#FDFCF8', zIndex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: '1.5rem' }}>{modal.icon}</span>
+                <h2 style={{ fontFamily: 'Cinzel,serif', fontSize: '0.9rem', letterSpacing: '0.1em', color: '#101010', margin: 0, textTransform: 'uppercase' }}>{modal.title}</h2>
+              </div>
+              <button
+                onClick={() => setActiveModal(null)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem', color: '#9A8C7E', lineHeight: 1, padding: 4, transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#101010')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#9A8C7E')}
+                aria-label="Cerrar"
+              >✕</button>
+            </div>
+            {/* Modal Body */}
+            <div style={{ padding: '24px 28px 32px', color: '#3D3530', fontSize: '0.88rem' }}>
+              {modal.body}
+            </div>
           </div>
         </div>
-      </div>
-    </footer>
+      )}
+
+      <style>{`
+        @keyframes modalIn {
+          from { opacity: 0; transform: translateY(16px) scale(0.98); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+      `}</style>
+
+      <footer style={{ background: S.offWhite, borderTop: `1px solid ${S.nude}`, paddingTop: 72 }}>
+        <div style={{ maxWidth: 1320, margin: '0 auto', padding: '0 2rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '280px repeat(2,1fr)', gap: 48, paddingBottom: 56, borderBottom: `1px solid ${S.nude}` }}>
+            <div>
+              <Image src="/Amora_Jewelry_logo_header_480x114.png" alt="Amora Jewelry" width={140} height={33} style={{ objectFit: 'contain', marginBottom: 20 }} />
+              <p style={{ color: S.muted, fontSize: '0.82rem', lineHeight: 1.75, marginBottom: 24 }}>
+                Joyería premium diseñada para mujeres que aprecian el lujo en cada detalle.
+              </p>
+              <div style={{ display: 'flex', gap: 10 }}>
+                {[
+                  { img: '/amora_instagram.png', href: 'https://www.instagram.com/amorajewelrychile/', title: 'Instagram' },
+                  { img: '/amora_whatsapp.png', href: 'https://wa.me/56951555556?text=Hola%20Amora%20Jewelry%2C%20quisiera%20consultar%20por%20sus%20joyas', title: 'WhatsApp' },
+                  { img: '/amora_email.png', href: 'mailto:amorajewelrychile@gmail.com', title: 'Email' },
+                ].map(s => (
+                  <a key={s.title} href={s.href} title={s.title} target={s.href.startsWith('http') ? '_blank' : undefined} rel={s.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    style={{ width: 36, height: 36, border: `1px solid ${S.nude}`, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.25s', padding: 8 }}
+                    onMouseEnter={e => { e.currentTarget.style.background = S.nude; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                      <Image src={s.img} alt={s.title} fill style={{ objectFit: 'contain' }} />
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {cols.map(col => (
+              <div key={col.t}>
+                <div style={{ fontFamily: 'Cinzel,serif', color: S.obsidian, fontSize: '0.66rem', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 20 }}>{col.t}</div>
+                {col.ls.map((item: any) => (
+                  item.modal ? (
+                    <button
+                      key={item.label}
+                      onClick={() => setActiveModal(item.label)}
+                      style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', padding: 0, color: S.muted, fontSize: '0.85rem', textDecoration: 'none', marginBottom: 12, transition: 'color 0.2s', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
+                      onMouseEnter={e => { e.currentTarget.style.color = S.obsidian; }}
+                      onMouseLeave={e => { e.currentTarget.style.color = S.muted; }}
+                    >
+                      {item.label}
+                      <span style={{ fontSize: '0.65rem', color: S.gold, opacity: 0.7 }}>→</span>
+                    </button>
+                  ) : (
+                    <a key={item.label} href={item.href} style={{ display: 'block', color: S.muted, fontSize: '0.85rem', textDecoration: 'none', marginBottom: 12, transition: 'color 0.2s' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = S.obsidian)}
+                      onMouseLeave={e => (e.currentTarget.style.color = S.muted)}
+                    >{item.label}</a>
+                  )
+                ))}
+              </div>
+            ))}
+          </div>
+
+          <div style={{ padding: '24px 0', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+            <span style={{ color: S.nudeDark, fontSize: '0.7rem', fontFamily: 'Cinzel,serif', letterSpacing: '0.08em' }}>© {new Date().getFullYear()} AMORA JEWELRY. TODOS LOS DERECHOS RESERVADOS.</span>
+            <div style={{ display: 'flex', gap: 20 }}>
+              {['Privacidad', 'Términos', 'Cookies'].map(t => (
+                <a key={t} href="#" style={{ color: S.nudeDark, fontSize: '0.7rem', textDecoration: 'none', fontFamily: 'Cinzel,serif' }}>{t}</a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </footer>
+    </>
   );
 }
+
 
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────
 export default function StorefrontClient({ products }: { products: any[] }) {
