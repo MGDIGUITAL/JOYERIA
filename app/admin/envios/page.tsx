@@ -117,28 +117,20 @@ export default function AdminEnvios() {
   const pendingDispatches = orders.filter(o => o.status === 'Pagado' || o.status === 'Pendiente');
   const shippedDispatches = orders.filter(o => o.status === 'Enviado');
 
-  const handlePrintAll = (ordersToPrint: any[]) => {
+  const handlePrintAll = (ordersToPrint?: any[]) => {
     const targetOrders = (ordersToPrint && ordersToPrint.length > 0) ? ordersToPrint : pendingDispatches;
     if (!targetOrders || targetOrders.length === 0) {
       alert('No hay órdenes pendientes para generar notas de despacho.');
       return;
     }
     setPrintOrders(targetOrders);
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        window.print();
-      }, 150);
-    });
+    window.print();
   };
 
   const handlePrintSingle = (order: any) => {
     if (!order) return;
     setPrintOrders([order]);
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        window.print();
-      }, 150);
-    });
+    window.print();
   };
 
   // Filter shippedDispatches based on timeframe selection
@@ -281,56 +273,65 @@ export default function AdminEnvios() {
           <div style={{ width: 1, height: 24, background: S.charcoal }}></div>
           <h1 style={{ margin: 0, fontFamily: 'Cinzel, serif', fontSize: '1.2rem', color: S.gold }}>Módulo de Resumen de Envíos</h1>
         </div>
-
-        {/* Botón Principal de Generación de Notas de Despacho (Solo para Pendientes) */}
-        <button 
-          onClick={() => handlePrintAll(pendingDispatches)}
-          disabled={pendingDispatches.length === 0}
-          style={{
-            background: pendingDispatches.length > 0 ? S.gold : S.muted,
-            color: S.obsidian,
-            border: 'none',
-            padding: '12px 24px',
-            borderRadius: 6,
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            cursor: pendingDispatches.length > 0 ? 'pointer' : 'not-allowed',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            boxShadow: pendingDispatches.length > 0 ? '0 4px 14px rgba(184,151,90,0.3)' : 'none',
-            transition: 'transform 0.2s',
-            opacity: pendingDispatches.length > 0 ? 1 : 0.6
-          }}
-        >
-          <span>🖨️</span>
-          <span>Imprimir Notas de Despacho Pendientes ({pendingDispatches.length})</span>
-        </button>
       </header>
 
       {/* ── MAIN CONTENT NO PRINT ────────────────────────────────────────── */}
       <main className="no-print" style={{ padding: '40px 5%', maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-          <div style={{ display: 'flex', gap: 16 }}>
+        {/* Tab & Primary Print Controls */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
+          <div style={{ display: 'flex', gap: 12 }}>
             <button 
-              onClick={() => setFilter('Pagado')}
-              style={{ 
-                padding: '12px 24px', cursor: 'pointer', background: filter === 'Pagado' ? S.obsidian : 'transparent',
-                color: filter === 'Pagado' ? S.offWhite : S.obsidian, border: `1px solid ${S.obsidian}`,
-                fontWeight: 600, borderRadius: 4, transition: 'all 0.2s'
-              }}>
+              onClick={() => { setFilter('Pagado'); setTimeframe('todos'); }}
+              style={{
+                background: filter === 'Pagado' ? S.obsidian : S.ivory,
+                color: filter === 'Pagado' ? S.offWhite : S.obsidian,
+                border: `1px solid ${S.nudeDark}`,
+                padding: '10px 20px',
+                borderRadius: 6,
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
               Por Despachar ({pendingDispatches.length})
             </button>
+
             <button 
-              onClick={() => setFilter('Enviado')}
-              style={{ 
-                padding: '12px 24px', cursor: 'pointer', background: filter === 'Enviado' ? S.obsidian : 'transparent',
-                color: filter === 'Enviado' ? S.offWhite : S.obsidian, border: `1px solid ${S.obsidian}`,
-                fontWeight: 600, borderRadius: 4, transition: 'all 0.2s'
-              }}>
+              onClick={() => { setFilter('Enviado'); setTimeframe('semanal'); }}
+              style={{
+                background: filter === 'Enviado' ? S.obsidian : S.ivory,
+                color: filter === 'Enviado' ? S.offWhite : S.obsidian,
+                border: `1px solid ${S.nudeDark}`,
+                padding: '10px 20px',
+                borderRadius: 6,
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
               Historial Enviados ({shippedDispatches.length})
             </button>
           </div>
+
+          {filter === 'Pagado' && pendingDispatches.length > 0 && (
+            <button
+              onClick={() => handlePrintAll(pendingDispatches)}
+              style={{
+                background: S.obsidian,
+                color: S.gold,
+                border: `1px solid ${S.gold}`,
+                padding: '10px 20px',
+                borderRadius: 6,
+                fontWeight: 'bold',
+                fontSize: '0.88rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              }}
+            >
+              🖨️ IMPRIMIR TODAS LAS NOTAS DE DESPACHO PENDIENTES ({pendingDispatches.length})
+            </button>
+          )}
         </div>
 
         {/* Historial Filters & Analytics Export Panel */}
