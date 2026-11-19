@@ -73,26 +73,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       fontFamily: 'Inter, system-ui, sans-serif',
       overflow: 'hidden'
     }}>
-      {/* ─── PRINT CSS OVERRIDES FOR ENTIRE ADMIN DASHBOARD ─── */}
-      <style>{`
-        @media print {
-          aside, header, nav, .no-print {
-            display: none !important;
-          }
-          body, html, main, .admin-layout-wrapper, .admin-layout-wrapper > div {
-            height: auto !important;
-            min-height: 0 !important;
-            max-height: none !important;
-            width: 100% !important;
-            overflow: visible !important;
-            background: #ffffff !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            box-shadow: none !important;
-            border: none !important;
-          }
-        }
-      `}</style>
       {/* ─── SIDEBAR ─── */}
       <aside style={{
         width: '260px',

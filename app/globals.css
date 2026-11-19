@@ -142,3 +142,23 @@ img {
 ::-webkit-scrollbar-track { background: var(--ivory); }
 ::-webkit-scrollbar-thumb { background: var(--nude-dark); border-radius: 3px; }
 ::selection { background: rgba(184,151,90,0.2); }
+
+/* ═══ PRINT STYLES ═══════════════════════════ */
+@media print {
+  aside, header, nav, .no-print {
+    display: none !important;
+  }
+  body, html, main, .admin-layout-wrapper, .admin-layout-wrapper > div {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    width: 100% !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
+

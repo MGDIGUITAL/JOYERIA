@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Informe Técnico de Entregable Integral - Amora Jewelry</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    @page {
+      size: A4 portrait;
+      margin: 12mm 14mm 12mm 14mm;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #111827;
+      background: #ffffff;
+      margin: 0;
+      padding: 0;
+      font-size: 10pt;
+      line-height: 1.5;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .page {
+      padding: 16px;
+      page-break-after: always;
+      box-sizing: border-box;
+    }
+
+    .page:last-child {
+      page-break-after: avoid;
+    }
+
+    /* HEADER STYLING */
+    .header-bar {
+      background: #090d16;
+      color: #ffffff;
+      padding: 24px 32px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 4px solid #b8975a;
+    }
+
+    .brand-title {
+      font-family: 'Cinzel', serif;
+      font-size: 22pt;
+      font-weight: 800;
+      color: #b8975a;
+      letter-spacing: 2px;
+      margin: 0;
+    }
+
+    .brand-subtitle {
+      font-size: 9.5pt;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 3px;
+    }
+
+    .badge-status {
+      background: #16a34a;
+      color: #ffffff;
+      font-weight: bold;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 8.5pt;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* SECTIONS */
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 14pt;
+      color: #0f172a;
+      border-bottom: 2px solid #b8975a;
+      padding-bottom: 4px;
+      margin-top: 18px;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-size: 11pt;
+      color: #b8975a;
+      margin-top: 12px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    p {
+      margin-bottom: 10px;
+      color: #334155;
+      text-align: justify;
+      font-size: 9.5pt;
+    }
+
+    /* GRIDS & CARDS */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 4px solid #b8975a;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 10.5pt;
+      color: #0f172a;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-desc {
+      font-size: 9pt;
+      color: #475569;
+      line-height: 1.45;
+    }
+
+    /* TABLES */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      margin-bottom: 14px;
+      font-size: 9pt;
+    }
+
+    th {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 8px 10px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+    }
+
+    tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    .status-ok {
+      color: #16a34a;
+      font-weight: bold;
+    }
+
+    .report-footer {
+      margin-top: 25px;
+      border-top: 1px solid #cbd5e1;
+      padding-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 8.5pt;
+      color: #64748b;
+    }
+
+    ul {
+      margin: 4px 0 8px 18px;
+      padding: 0;
+      font-size: 9pt;
+      color: #334155;
+    }
+
+    li {
+      margin-bottom: 3px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== PÁGINA 1: OVERVIEW Y LANDING PAGE E-COMMERCE ==================== -->
+  <div class="page">
+    
+    <div class="header-bar">
+      <div>
+        <div class="brand-title">AMORA JEWELRY</div>
+        <div class="brand-subtitle">Informe Ejecutivo de Entrega de Proyecto Integral (Storefront + SaaS)</div>
+      </div>
+      <div>
+        <span class="badge-status">✓ 100% OPERATIVO EN VIVO</span>
+      </div>
+    </div>
+
+    <div style="background: #fdfbf7; border: 1px solid #f3e8d2; padding: 12px 16px; border-radius: 6px; margin-bottom: 16px;">
+      <table style="margin: 0; font-size: 9pt;">
+        <tr>
+          <td><strong>Cliente:</strong> Amora Jewelry Chile</td>
+          <td><strong>Dominio Web:</strong> <a href="https://amorajewelry.cl" style="color: #b8975a; font-weight: bold; text-decoration: none;">https://amorajewelry.cl</a></td>
+        </tr>
+        <tr>
+          <td><strong>Alcance:</strong> E-Commerce Storefront + SaaS Administrador</td>
+          <td><strong>Arquitectura:</strong> Next.js 14 + Supabase DB + Vercel Production</td>
+        </tr>
+      </table>
+    </div>
+
+    <h1>1. Resumen Ejecutivo del Proyecto</h1>
+    <p>
+      Se presenta el informe de auditoría y entrega técnica completa para el ecosistema digital de **Amora Jewelry**. El proyecto abarca desde la experiencia de usuario y compra del consumidor final en el **Storefront E-Commerce**, hasta la gestión operativa, inventario, ventas e impresión masiva logística dentro del **Sistema Administrativo SaaS**.
+    </p>
+
+    <h1>2. Módulo 1: Storefront E-Commerce (Front-End & UX)</h1>
+    <p>
+      Diseñado bajo el concepto estético <strong>"Pearl & Obsidian"</strong>, combinando tonos Off-White, Nude, Dorado y Obsidian para transmitir la exclusividad de la alta joyería en Chile.
+    </p>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">✨ 1. Landing & Home Principal</div>
+        <div class="card-desc">
+          <ul>
+            <li><strong>Hero Banner Interactivo:</strong> Carrusel dinámico rotativo con transiciones suaves cada 4 segundos.</li>
+            <li><strong>Branding de Alta Gama:</strong> Logo oficial integrado con tipografía editorial <code>Cinzel</code> e <code>Inter</code>.</li>
+            <li><strong>Barra de Beneficios:</strong> Destacados de despacho a todo Chile y compras seguras.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💎 2. Catálogo & Fichas de Producto</div>
+        <div class="card-desc">
+          <ul>
+            <li><strong>Filtrado por Categorías:</strong> Anillos, Cadenas, Aros y Pulseras con buscador rápido.</li>
+            <li><strong>Páginas de Detalle (/product/[id]):</strong> Galería HD, especificaciones de material y selector de tallas.</li>
+            <li><strong>Control de Stock:</strong> Sincronización automática de inventario disponible.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🛒 3. Carrito Lateral & Despacho Blue Express</div>
+        <div class="card-desc">
+          <ul>
+            <li><strong>CartSidebar Deslizante:</strong> Resumen de compra instantáneo sin recargar la página.</li>
+            <li><strong>Checkout Inteligente (/checkout):</strong> Selección entre <strong>Despacho a Domicilio</strong> o <strong>Punto Blue Express (Copec/Agencias)</strong>.</li>
+            <li><strong>Comunas de Chile:</strong> Cobertura logística completa por regiones y comunas.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚖️ 4. SEO, Legal & Contacto Directo</div>
+        <div class="card-desc">
+          <ul>
+            <li><strong>SEO & Favicon HD:</strong> Metadatos OpenGraph, manifest y favicons optimizados para Google.</li>
+            <li><strong>Modales de Política (Ley 19.496):</strong> "Cómo Comprar", "Envíos", "Cambios y Garantía".</li>
+            <li><strong>Contacto Directo:</strong> Accesos directos a WhatsApp, Instagram y Correo corporativo.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-footer">
+      <span>Amora Jewelry — Informe Técnico de Entregable Integral</span>
+      <span>Página 1 de 3</span>
+    </div>
+  </div>
+
+  <!-- ==================== PÁGINA 2: SISTEMA ADMINISTRATIVO SAAS ==================== -->
+  <div class="page">
+
+    <h1>3. Módulo 2: Sistema Administrativo SaaS (/admin)</h1>
+    <p>
+      Plataforma de gestión comercial y logística protegida, diseñada para permitir al equipo de Amora Jewelry administrar todas las áreas del negocio desde un único panel centralizado.
+    </p>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">📈 1. Dashboard de Analíticas (/admin)</div>
+        <div class="card-desc">
+          - Métricas de ventas totales, número de pedidos e ingresos semanales/mensuales.<br>
+          - Gráficos de tendencias comerciales y ticket promedio por cliente.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🛍️ 2. Módulo de Ventas & Tracking (/admin/ventas)</div>
+        <div class="card-desc">
+          - Historial de pedidos con estados: <em>Pagado, Pendiente, Enviado</em>.<br>
+          - Modal interactivo de detalle con datos completos del comprador.<br>
+          - Asignación de código de seguimiento (Tracking) de couriers.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📦 3. Catálogo & Productos (/admin/productos)</div>
+        <div class="card-desc">
+          - Modal <code>NewProductModal</code> para añadir joyas con imagen, precio y descripción.<br>
+          - Edición y actualización rápida de precios y stock.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">👥 4. Clientes, Cupones & Balance</div>
+        <div class="card-desc">
+          - Directorio de clientes con historial de compras acumuladas.<br>
+          - Módulo de Cupones de descuento con fechas de vigencia.<br>
+          - Balance financiero consolidado para control de margen y envíos.
+        </div>
+      </div>
+    </div>
+
+    <h1>4. Módulo Logístico de Impresión A4 (/admin/envios)</h1>
+    <p>
+      Sistema de generación de documentos de transporte en formato A4 estándar, desarrollado para acelerar la preparación de paquetes en bodega y garantizar la acreditación de entrega.
+    </p>
+
+    <div class="card" style="margin-bottom: 14px;">
+      <div class="card-title">🖨️ Innovación en Generación e Impresión Masiva A4</div>
+      <div class="card-desc">
+        <ul>
+          <li><strong>Impresión Masiva en 1 Clic:</strong> El botón dorado <code>🖨️ IMPRIMIR TODAS LAS NOTAS PENDIENTES</code> genera simultáneamente todas las órdenes del día.</li>
+          <li><strong>Ruta Especializada (/admin/envios/imprimir):** Genera documentos limpios en A4 omitiendo barras de menú o elementos de pantalla del panel.</li>
+          <li><strong>Paginación A4 Estricta:</strong> Garantiza que cada pedido ocupe exactamente 1 hoja A4 con foto referencial del producto, desglose de montos y recuadro de firma/sello.</li>
+          <li><strong>Barra de Control & Retorno:</strong> Incluye el botón azul <code>⬅️ Volver al Panel SaaS</code> para seguir trabajando inmediatamente tras la impresión.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="report-footer">
+      <span>Amora Jewelry — Informe Técnico de Entregable Integral</span>
+      <span>Página 2 de 3</span>
+    </div>
+  </div>
+
+  <!-- ==================== PÁGINA 3: AUDITORÍA TÉCNICA Y GUÍA DE OPERACIÓN ==================== -->
+  <div class="page">
+
+    <h1>5. Matriz de Auditoría y Validación Técnica</h1>
+    <p>
+      Se realizaron pruebas de compilación, integración de APIs y rendimiento en los servidores de producción de Vercel y Supabase Cloud:
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Módulo / Componente</th>
+          <th>Prueba de Auditoría Realizada</th>
+          <th>Resultado Obtenido</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Compilación Next.js 14</strong></td>
+          <td>Build de producción con validación de tipos TypeScript.</td>
+          <td>0 Errores de sintaxis / SWC.</td>
+          <td class="status-ok">✓ APROBADO</td>
+        </tr>
+        <tr>
+          <td><strong>Base de Datos Supabase</strong></td>
+          <td>Conexión PostgreSQL, esquemas de <code>orders</code> e <code>items</code>.</td>
+          <td>Escritura y lectura en tiempo real.</td>
+          <td class="status-ok">✓ APROBADO</td>
+        </tr>
+        <tr>
+          <td><strong>Checkout & Couriers</strong></td>
+          <td>Selección de Domicilio vs Punto Blue Express en comunas.</td>
+          <td>Registro exacto de dirección y entrega.</td>
+          <td class="status-ok">✓ APROBADO</td>
+        </tr>
+        <tr>
+          <td><strong>Impresión Masiva A4</strong></td>
+          <td>Renderizado multipágina de todas las órdenes pendientes.</td>
+          <td>Hojas A4 independientes con paginación limpia.</td>
+          <td class="status-ok">✓ APROBADO</td>
+        </tr>
+        <tr>
+          <td><strong>Barra de Navegación SaaS</strong></td>
+          <td>Retorno fluido desde la vista de impresión al dashboard.</td>
+          <td>Flujo de trabajo sin interrupciones.</td>
+          <td class="status-ok">✓ APROBADO</td>
+        </tr>
+        <tr>
+          <td><strong>SEO, Favicon & Meta</strong></td>
+          <td>Verificación de etiquetas OpenGraph, manifest y favicons HD.</td>
+          <td>Indexación lista en Google.</td>
+          <td class="status-ok">✓ APROBADO</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h1>6. Guía Rápida de Operación para el Cliente</h1>
+    
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">1. Procesar Envíos Pendientes</div>
+        <div class="card-desc">
+          1. Ingrese a <code>/admin/envios</code>.<br>
+          2. Presione <strong>"🖨️ IMPRIMIR TODAS LAS NOTAS PENDIENTES"</strong>.<br>
+          3. Imprima el lote A4 de pedidos.<br>
+          4. Haga clic en <strong>"⬅️ Volver al Panel SaaS"</strong>.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">2. Asignar Tracking y Despachar</div>
+        <div class="card-desc">
+          1. Al armar los paquetes, presione <strong>"Marcar como Enviado"</strong>.<br>
+          2. En <code>/admin/ventas</code>, ingrese el número de seguimiento de Blue Express para que quede registrado en la orden.
+        </div>
+      </div>
+    </div>
+
+    <h1>7. Conclusión y Cierre de Entregable</h1>
+    <p>
+      El proyecto **Amora Jewelry** ha sido finalizado con éxito, entregando una solución e-commerce completa, escalable, segura y adaptada a las necesidades operativas de la marca en Chile.
+    </p>
+
+    <div style="margin-top: 35px; display: flex; justify-content: space-between; align-items: flex-end;">
+      <div style="text-align: center; width: 220px; border-top: 1px solid #0f172a; padding-top: 8px;">
+        <strong style="font-size: 9.5pt; color: #0f172a;">MGDIGITAL / Equipo Dev</strong><br>
+        <span style="font-size: 8pt; color: #64748b;">Desarrollo & Arquitectura SaaS</span>
+      </div>
+      <div style="text-align: center; width: 220px; border-top: 1px solid #0f172a; padding-top: 8px;">
+        <strong style="font-size: 9.5pt; color: #0f172a;">Amora Jewelry Chile</strong><br>
+        <span style="font-size: 8pt; color: #64748b;">Recepción de Entregable</span>
+      </div>
+    </div>
+
+    <div class="report-footer">
+      <span>Amora Jewelry — Informe Técnico de Entregable Integral</span>
+      <span>Página 3 de 3</span>
+    </div>
+
+  </div>
+
+</body>
+</html>
