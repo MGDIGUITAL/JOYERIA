@@ -162,3 +162,40 @@ img {
   }
 }
 
+/* ═══ HERO RESPONSIVE STYLES ═════════════════ */
+.hero-img-mobile { display: none !important; }
+.hero-btn-container { justify-content: flex-end; padding: 0 5vw; }
+.hero-catalog-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--obsidian) !important;
+  color: var(--off-white) !important;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 18px 44px;
+  border: 1px solid var(--obsidian);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+}
+@media (max-width: 768px) {
+  .hero-img-desktop { display: none !important; }
+  .hero-img-mobile { display: block !important; }
+  .hero-btn-container { justify-content: center !important; padding: 0 20px !important; }
+  .hero-catalog-btn {
+    background-color: #101010 !important;
+    color: #FFFFFF !important;
+    padding: 16px 36px !important;
+    font-size: 0.82rem !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.7) !important;
+    border-radius: 4px;
+  }
+}
+
+
