@@ -1,5 +1,6 @@
 'use client';
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { trackEvent } from './MetaPixel';
 
 export interface CartItem {
   id: string; // The cart item ID (product.id or product.id + size)
@@ -51,6 +52,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addToCart = (product: any, quantity = 1, size?: string) => {
     const cartItemId = size ? `${product.id}-${size}` : String(product.id);
+    const itemPrice = product.sale_price || product.price || 0;
     
     setCart(prev => {
       const existing = prev.find(item => item.id === cartItemId);
@@ -65,12 +67,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
         id: cartItemId,
         productId: String(product.id),
         title: product.title,
-        price: product.sale_price || product.price || 0,
+        price: itemPrice,
         image_url: product.image_url,
         quantity,
         size
       }];
     });
+
+    trackEvent('AddToCart', {
+      content_name: product.title,
+      content_ids: [String(product.id)],
+      content_type: 'product',
+      value: itemPrice * quantity,
+      currency: 'CLP',
+    });
+
     setIsCartOpen(true);
   };
 

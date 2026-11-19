@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { CartProvider } from './components/CartContext';
 import CookieConsent from './components/CookieConsent';
+import MetaPixel from './components/MetaPixel';
 
 export const viewport: Viewport = {
   themeColor: '#080808',
@@ -141,6 +142,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body style={{ background: '#080808', color: '#fff', fontFamily: 'Inter, sans-serif' }} suppressHydrationWarning>
+        <MetaPixel />
         <CartProvider>
           {children}
         </CartProvider>

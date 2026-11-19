@@ -1,7 +1,8 @@
 'use client';
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useCart } from '@/app/components/CartContext';
+import { trackEvent } from '@/app/components/MetaPixel';
 import Image from 'next/image';
 
 const S = {
@@ -139,6 +140,7 @@ function StatusContent() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [flowData, setFlowData] = useState<any>(null);
   const [orderDetails, setOrderDetails] = useState<{ order: any; items: any[] } | null>(null);
+  const hasTrackedPurchaseRef = useRef(false);
 
   useEffect(() => {
     if (!token) { setStatus('error'); return; }
@@ -160,6 +162,15 @@ function StatusContent() {
           { id: 2, product_title: 'Collar Luna Menguante', quantity: 1, price: 20000, size: null },
         ]
       });
+      if (!hasTrackedPurchaseRef.current) {
+        hasTrackedPurchaseRef.current = true;
+        trackEvent('Purchase', {
+          value: 59900,
+          currency: 'CLP',
+          content_type: 'product',
+          order_id: 'demo-1'
+        });
+      }
       return;
     }
 
@@ -174,6 +185,16 @@ function StatusContent() {
         const details = await detailsRes.json();
         if (detailsRes.ok) setOrderDetails(details);
         setStatus('success');
+
+        if (!hasTrackedPurchaseRef.current) {
+          hasTrackedPurchaseRef.current = true;
+          trackEvent('Purchase', {
+            value: flow.amount,
+            currency: 'CLP',
+            content_type: 'product',
+            order_id: String(flow.commerceOrder)
+          });
+        }
       } catch { setStatus('error'); }
     };
 

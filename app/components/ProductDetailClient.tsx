@@ -1,8 +1,9 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from './CartContext';
+import { trackEvent } from './MetaPixel';
 
 // ─── DESIGN TOKENS ────────────────────────────────────────────────────────
 const S = {
@@ -20,6 +21,18 @@ const S = {
 export default function ProductDetailClient({ product }: { product: any }) {
   const { addToCart, openCart, cartCount } = useCart();
   const [activeImage, setActiveImage] = useState(product.image_url);
+
+  useEffect(() => {
+    if (product) {
+      trackEvent('ViewContent', {
+        content_name: product.title,
+        content_ids: [String(product.id)],
+        content_type: 'product',
+        value: product.sale_price,
+        currency: 'CLP',
+      });
+    }
+  }, [product]);
 
   // Imágenes disponibles para la galería
   const galleryImages: string[] = [product.image_url];

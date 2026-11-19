@@ -3,8 +3,9 @@ export const dynamic = 'force-dynamic';
 import { useCart } from '../components/CartContext';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { trackEvent } from '../components/MetaPixel';
 import { REGIONS } from '@/lib/shippingRates';
 import { PICKUP_POINTS } from '@/lib/pickupPoints';
 import { REGION_COMUNAS } from '@/lib/chileData';
@@ -23,6 +24,20 @@ const S = {
 export default function CheckoutPage() {
   const { cart, cartTotal } = useCart();
   const router = useRouter();
+  const hasTrackedCheckoutRef = useRef(false);
+
+  useEffect(() => {
+    if (cart.length > 0 && !hasTrackedCheckoutRef.current) {
+      hasTrackedCheckoutRef.current = true;
+      trackEvent('InitiateCheckout', {
+        value: cartTotal,
+        currency: 'CLP',
+        num_items: cart.length,
+        content_ids: cart.map(item => item.productId),
+        content_type: 'product',
+      });
+    }
+  }, [cart, cartTotal]);
   
   const [deliveryMethod, setDeliveryMethod] = useState<'domicilio' | 'retiro'>('domicilio');
   const [selectedRegionId, setSelectedRegionId] = useState('');
