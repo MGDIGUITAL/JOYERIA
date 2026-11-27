@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import { CartProvider } from './components/CartContext';
 import CookieConsent from './components/CookieConsent';
 import MetaPixel from './components/MetaPixel';
+import WhatsAppButton from './components/WhatsAppButton';
 
 export const viewport: Viewport = {
   themeColor: '#080808',
@@ -183,6 +184,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </CartProvider>
         <CookieConsent />
+        <WhatsAppButton />
       </body>
     </html>
   );

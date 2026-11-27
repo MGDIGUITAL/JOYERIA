@@ -107,7 +107,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <NavItem icon={<Icons.Customers />} label="Clientes" href="/admin/clientes" active={path.includes('/clientes')} />
           <NavItem icon={<Icons.Ticket />} label="Cupones" href="/admin/cupones" active={path.includes('/cupones')} />
           <NavItem icon={<Icons.Messages />} label="Mensajes" href="/admin/mensajes" active={path.includes('/mensajes')} />
-          <NavItem icon={<Icons.Dollar />} label="Balance" href="/admin/balance" active={path.includes('/balance')} />
+          <NavItem icon={<Icons.Dollar />} label="Meta Ads & Finanzas" href="/admin/balance" active={path.includes('/balance')} />
           
           <div style={{ margin: '16px 0', height: '1px', backgroundColor: T.border }} />
           

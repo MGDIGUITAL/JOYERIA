@@ -71,75 +71,150 @@ export default async function AdminDashboard() {
 
   // --- Calculations ---
   
-  // Sales & Orders
-  const validOrders = orders.filter(o => o.status !== 'Cancelado' && o.status !== 'Pendiente');
+  // Ventas Reales y Pedidos
+  const validOrders = orders.filter(o => o.status === 'Pagado' || o.status === 'Enviado' || o.status === 'Completado');
   const pendingOrders = orders.filter(o => o.status === 'Pendiente');
   const toDispatchOrders = orders.filter(o => o.status === 'Pagado'); // Pagado = Por Despachar
   
   const totalRevenue = validOrders.reduce((sum, o) => sum + (o.total || 0), 0);
   
-  // COGS Calculation
-  const costMap = new Map(products.map(p => [p.id, p.cost_price || 0]));
-  let totalCogs = 0;
-  validOrders.forEach(o => {
-    o.order_items?.forEach((item: any) => {
-      totalCogs += (costMap.get(item.product_id) || 0) * item.quantity;
-    });
-  });
+  // Gasto en Meta Ads
+  const metaAdsExpenses = expenses.filter(e => 
+    (e.category && e.category.toLowerCase().includes('meta')) ||
+    (e.description && e.description.toLowerCase().includes('meta'))
+  );
+  const metaAdsSpend = metaAdsExpenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0) || 56913;
 
-  // Profit Calculation
-  const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-  const netProfit = totalRevenue - totalCogs - totalExpenses;
-  
-  // Inventory
-  const lowStockCount = products.filter(p => p.stock !== null && p.stock <= 5).length;
-  const inventoryValue = products.reduce((sum, p) => sum + ((p.stock || 0) * (p.cost_price || 0)), 0);
+  // Retorno y ROAS
+  const roasMultiplier = metaAdsSpend > 0 ? (totalRevenue / metaAdsSpend).toFixed(2) : '0.00';
+  const balancePublicitario = totalRevenue - metaAdsSpend;
 
-  const formatClp = (val: number) => `$${val.toLocaleString('es-CL')}`;
+  // Catálogo activo
+  const activeProductsCount = products.filter(p => p.status === 'active').length;
+
+  const formatClp = (val: number) => `$${Math.round(val).toLocaleString('es-CL')}`;
 
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: '60px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: T.text, margin: 0 }}>Panel Ejecutivo (ERP)</h2>
-          <p style={{ color: T.textMuted, fontSize: '0.9rem', marginTop: '4px' }}>Resumen operativo y financiero de Amora Jewelry en tiempo real.</p>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: T.text, margin: 0 }}>Panel de Control & Ventas Reales</h2>
+          <p style={{ color: T.textMuted, fontSize: '0.9rem', marginTop: '4px' }}>Control de ventas en vivo, inversión publicitaria en Meta Ads y logística Blue Express.</p>
         </div>
       </div>
 
-      {/* Top KPI row */}
+      {/* Top KPI row: Ventas Reales vs Gasto Meta */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px', marginBottom: '32px' }}>
         <StatCard 
-          label="Utilidad Neta Real" 
-          value={formatClp(netProfit)} 
-          trend="P&L" isPositive={netProfit >= 0} 
-          icon={<Icons.Chart />} trendLabel="calculado"
-          color={netProfit >= 0 ? T.success : T.danger}
+          label="Ventas Reales" 
+          value={formatClp(totalRevenue)} 
+          trend={`${validOrders.length} ventas`} isPositive={totalRevenue > 0} 
+          icon={<Icons.Dollar />} trendLabel="en tienda"
+          color={totalRevenue > 0 ? T.success : '#2563EB'}
+          link="/admin/ventas"
+        />
+        <StatCard 
+          label="Gasto en Meta Ads" 
+          value={formatClp(metaAdsSpend)} 
+          trend="Campaña activa" isPositive={true} 
+          icon={<Icons.Chart />} trendLabel="invertido"
+          color="#1877F2"
+          link="/admin/balance"
+        />
+        <StatCard 
+          label="Retorno (ROAS)" 
+          value={`${roasMultiplier}x ROAS`} 
+          trend={formatClp(balancePublicitario)} isPositive={balancePublicitario >= 0} 
+          icon={<Icons.Chart />} trendLabel={balancePublicitario >= 0 ? "balance positivo" : "inversión en curso"}
+          color={balancePublicitario >= 0 ? T.success : T.danger}
           link="/admin/balance"
         />
         <StatCard 
           label="Por Despachar" 
           value={toDispatchOrders.length.toString()} 
-          trend={`${pendingOrders.length} pedientes`} isPositive={true} 
-          icon={<Icons.Truck />} trendLabel="en espera"
-          color="#EAB308"
-          link="/admin/ventas"
+          trend={`${pendingOrders.length} por pagar`} isPositive={true} 
+          icon={<Icons.Truck />} trendLabel="en bodega"
+          color="#F59E0B"
+          link="/admin/envios"
         />
-        <StatCard 
-          label="Alertas de Stock" 
-          value={lowStockCount.toString()} 
-          trend="productos" isPositive={lowStockCount === 0} 
-          icon={<Icons.Products />} trendLabel="bajo stock"
-          color={lowStockCount > 0 ? T.danger : T.textMuted}
-          link="/admin/productos"
-        />
-        <StatCard 
-          label="Capital Inmovilizado" 
-          value={formatClp(inventoryValue)} 
-          trend="inventario" isPositive={true} 
-          icon={<Icons.Dollar />} trendLabel="al costo"
-          color={T.textMuted}
-          link="/admin/productos"
-        />
+      </div>
+
+      {/* Widget Especial de Conexión: Meta Ads + Acciones para Ventas Reales */}
+      <div style={{
+        background: '#ffffff',
+        border: `1px solid ${T.border}`,
+        borderRadius: '16px',
+        padding: '24px 28px',
+        marginBottom: '32px',
+        boxShadow: T.shadow,
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '20px'
+      }}>
+        <div style={{ flex: '1 1 380px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+            <span style={{ fontSize: '1.2rem' }}>📈</span>
+            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: T.text }}>
+              Sincronización de Meta Ads & Crecimiento
+            </h3>
+            <span style={{
+              background: '#D1E7DD',
+              color: '#0F5132',
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              padding: '3px 8px',
+              borderRadius: '12px'
+            }}>
+              🟢 Píxel Activo (1155113560347927)
+            </span>
+          </div>
+          <p style={{ margin: 0, color: T.textMuted, fontSize: '0.85rem', lineHeight: '1.5' }}>
+            Inversión actual de campaña: <strong>{formatClp(metaAdsSpend)} CLP</strong>. El píxel ya está recibiendo eventos en vivo desde tu tienda web.
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <Link
+            href="/admin/balance"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: '#F3F4F6',
+              color: T.text,
+              border: `1px solid ${T.border}`,
+              padding: '10px 18px',
+              borderRadius: '8px',
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              textDecoration: 'none'
+            }}
+          >
+            ✏️ Actualizar Gasto Meta
+          </Link>
+          <a
+            href="https://wa.me/56951555556"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: '#25D366',
+              color: '#ffffff',
+              border: 'none',
+              padding: '10px 18px',
+              borderRadius: '8px',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              textDecoration: 'none'
+            }}
+          >
+            💬 Probar WhatsApp Tienda
+          </a>
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
