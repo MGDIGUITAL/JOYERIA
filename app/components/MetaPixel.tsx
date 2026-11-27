@@ -4,8 +4,8 @@ import Script from 'next/script';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, Suspense } from 'react';
 
-export const PRIMARY_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID || '1155113560347927';
-export const SECONDARY_PIXEL_ID = '1374636215742817';
+export const PIXEL_CAMPAIGN_ID = '1155113560347927'; // Píxel vinculado a la campaña activa
+export const PIXEL_DATASET_ID  = '1374636215742817'; // Píxel conjunto de datos AMORA
 
 export function pageview() {
   if (typeof window !== 'undefined' && typeof (window as any).fbq === 'function') {
@@ -57,8 +57,8 @@ export default function MetaPixel() {
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '${PRIMARY_PIXEL_ID}');
-            fbq('init', '${SECONDARY_PIXEL_ID}');
+            fbq('init', '1155113560347927');
+            fbq('init', '1374636215742817');
             fbq('track', 'PageView');
           `,
         }}
@@ -68,14 +68,14 @@ export default function MetaPixel() {
           height="1"
           width="1"
           style={{ display: 'none' }}
-          src={`https://www.facebook.com/tr?id=${PRIMARY_PIXEL_ID}&ev=PageView&noscript=1`}
+          src="https://www.facebook.com/tr?id=1155113560347927&ev=PageView&noscript=1"
           alt=""
         />
         <img
           height="1"
           width="1"
           style={{ display: 'none' }}
-          src={`https://www.facebook.com/tr?id=${SECONDARY_PIXEL_ID}&ev=PageView&noscript=1`}
+          src="https://www.facebook.com/tr?id=1374636215742817&ev=PageView&noscript=1"
           alt=""
         />
       </noscript>
